@@ -1,6 +1,4 @@
 package com.example.volunteer_system.util;
-
-
 import org.mindrot.jbcrypt.BCrypt;
 
 public class BCryptPasswordUtil {

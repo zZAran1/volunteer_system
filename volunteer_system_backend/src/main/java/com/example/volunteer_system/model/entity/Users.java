@@ -6,7 +6,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 @Data
-@TableName("/users")
+@TableName("users")
 public class Users {
     @TableId
     private Integer id;
@@ -14,4 +14,7 @@ public class Users {
     private String password;
     private String email;
     private LocalDate created_at;
+    private Integer role;
+    private Integer status;
+    private String image_url;
 }
