@@ -1,5 +1,4 @@
 package com.example.volunteer_system.controller;
-import com.example.volunteer_system.model.dto.AvatarUpdateDTO;
 import com.example.volunteer_system.model.dto.LoginDTO;
 import com.example.volunteer_system.model.dto.RegisterDTO;
 import com.example.volunteer_system.model.dto.UpdateProfileDTO;

@@ -5,6 +5,7 @@ import lombok.Data;
 import java.time.LocalDate;
 @Data
 public class ActivityVO {
+    private Integer id;
     private String poster_name;
     private String title;
     private String address;

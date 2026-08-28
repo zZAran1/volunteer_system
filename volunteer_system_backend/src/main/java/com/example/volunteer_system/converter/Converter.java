@@ -22,5 +22,4 @@ public interface Converter {
     UserVO toUsersVO(Users users);
     Activity toActivity(CreateActivityDTO dto);
     Activity toActivity(UpdateActivityDTO dto);
-
 }

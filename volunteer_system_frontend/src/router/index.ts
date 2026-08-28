@@ -26,6 +26,18 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
+      path: '/activities',
+      name: 'activities',
+      component: () => import('@/views/ActivityListView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/my-activities',
+      name: 'myActivities',
+      component: () => import('@/views/MyActivitiesView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/admin',
       name: 'admin',
       component: () => import('@/views/AdminView.vue'),

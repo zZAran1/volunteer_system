@@ -21,6 +21,11 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
+      // 头像等上传文件的静态资源（后端启动后由 /uploads/** 提供）
+      '/uploads': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
     },
   },
 })

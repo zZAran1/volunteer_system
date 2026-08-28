@@ -58,6 +58,20 @@ watch(isAuthenticated, (val) => {
             个人中心
           </RouterLink>
           <RouterLink
+            to="/activities"
+            class="nav-link"
+            :class="{ 'is-active': route.name === 'activities' }"
+          >
+            活动广场
+          </RouterLink>
+          <RouterLink
+            to="/my-activities"
+            class="nav-link"
+            :class="{ 'is-active': route.name === 'myActivities' }"
+          >
+            我的活动
+          </RouterLink>
+          <RouterLink
             v-if="isAdmin"
             to="/admin"
             class="nav-link"
@@ -89,6 +103,17 @@ watch(isAuthenticated, (val) => {
 </template>
 
 <style scoped>
+@media (max-width: 860px) {
+  .topbar-nav {
+    gap: 2px;
+  }
+
+  .nav-link {
+    padding: 7px 10px;
+    font-size: 13px;
+  }
+}
+
 @media (max-width: 720px) {
   .topbar-meta {
     display: none;

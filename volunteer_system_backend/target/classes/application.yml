@@ -27,6 +27,7 @@ file:
   upload:
     path: D:\Work\VolunteerSystem\volunteer_system_backend\src\main\resources\static   # 图片存储的本地路径
 mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: false

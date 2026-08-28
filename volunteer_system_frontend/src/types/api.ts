@@ -11,6 +11,10 @@ export interface Result<T = unknown> {
 export interface LoginDTO {
   email: string
   password: string
+  /** 图形验证码标识（来自验证码接口） */
+  captchaId: string
+  /** 图形验证码文本 */
+  captchaText: string
 }
 
 /** 注册入参 */
@@ -82,4 +86,61 @@ export function roleLabel(role: number): string {
 
 export function statusLabel(status: number): string {
   return status === STATUS.BANNED ? '已封禁' : '正常'
+}
+
+/** 图形验证码（后端 CaptchaVO） */
+export interface CaptchaVO {
+  /** 验证码唯一标识，登录时随验证码文本一起提交 */
+  captchaId: string
+  /** PNG 图片 base64，已含 data:image/png;base64, 前缀 */
+  imageBase64: string
+}
+
+/** 活动视图对象（后端 ActivityVO，JSON 字段为下划线风格） */
+export interface ActivityVO {
+  id: number
+  /** 发布者用户名（后端 LEFT JOIN 查询，可能为空） */
+  poster_name: string
+  title: string
+  address: string
+  start_date: string
+  end_date: string
+  description: string
+  /** 已报名人数 */
+  headcount: number
+  /** 报名人数上限 */
+  headcount_limit: number
+  status: number
+}
+
+/** 发布活动入参（后端 CreateActivityDTO） */
+export interface CreateActivityDTO {
+  title: string
+  address: string
+  start_date: string
+  end_date: string
+  description: string
+  headcount_limit: number
+}
+
+/** 修改活动入参（后端 UpdateActivityDTO，需携带 id） */
+export interface UpdateActivityDTO extends CreateActivityDTO {
+  id: number
+}
+
+/** 活动状态：0 待审核 · 1 招募中 */
+export const ACTIVITY_STATUS = {
+  PENDING: 0,
+  RECRUITING: 1,
+} as const
+
+export function activityStatusLabel(status: number): string {
+  switch (status) {
+    case ACTIVITY_STATUS.RECRUITING:
+      return '招募中'
+    case ACTIVITY_STATUS.PENDING:
+      return '待审核'
+    default:
+      return '状态未知'
+  }
 }

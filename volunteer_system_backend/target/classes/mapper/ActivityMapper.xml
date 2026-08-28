@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.volunteer_system.mapper.ActivityMapper">
+
+    <select id="selectAllActivity" resultType="com.example.volunteer_system.model.vo.ActivityVO">
+        SELECT a.id,
+               a.title,
+               a.address,
+               a.start_date,
+               a.end_date,
+               a.description,
+               a.headcount,
+               a.headcount_limit,
+               a.status,
+               u.username AS poster_name
+        FROM activity a
+                 LEFT JOIN users u ON a.poster_id = u.id
+        ORDER BY a.id DESC
+    </select>
+    <select id="selectMyActivity" resultType="com.example.volunteer_system.model.vo.ActivityVO">
+        SELECT a.id,
+               a.title,
+               a.address,
+               a.start_date,
+               a.end_date,
+               a.description,
+               a.headcount,
+               a.headcount_limit,
+               a.status,
+               u.username AS poster_name
+        FROM activity a
+                 LEFT JOIN users u ON a.poster_id = u.id
+        WHERE a.poster_id = #{posterId}
+        ORDER BY a.id DESC
+    </select>
+
+</mapper>

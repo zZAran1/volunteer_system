@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { deleteUser, getProfile, updateProfile } from '@/api/user'
+import { deleteUser, getProfile, updateProfile, uploadAvatar } from '@/api/user'
 import { authState, clearAuth, setProfile } from '@/stores/auth'
 import { roleLabel } from '@/types/api'
 import { useToast } from '@/composables/toast'
@@ -18,6 +18,40 @@ const roleText = computed(() =>
 const username = ref('')
 const saving = ref(false)
 const deleting = ref(false)
+
+const fileInput = ref<HTMLInputElement | null>(null)
+const avatarPreview = ref('')
+const uploading = ref(false)
+
+function pickAvatar() {
+  fileInput.value?.click()
+}
+
+async function onAvatarChange(e: Event) {
+  const input = e.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = ''
+  if (!file) return
+  if (!file.type.startsWith('image/')) {
+    toast.error('请选择图片文件')
+    return
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    toast.error('图片大小不能超过 5MB')
+    return
+  }
+  uploading.value = true
+  try {
+    await uploadAvatar(file)
+    if (avatarPreview.value) URL.revokeObjectURL(avatarPreview.value)
+    avatarPreview.value = URL.createObjectURL(file)
+    toast.success('头像已更新')
+  } catch (err) {
+    toast.error((err as Error).message)
+  } finally {
+    uploading.value = false
+  }
+}
 
 onMounted(() => {
   username.value = profile.value?.username ?? ''
@@ -87,12 +121,25 @@ async function onDelete() {
     <div v-else class="profile-grid animate-in">
       <!-- 左侧：身份卡片 -->
       <section class="card card-pad identity">
-        <div class="avatar avatar-lg">{{ initials }}</div>
+        <div class="avatar avatar-lg" :class="{ 'avatar-img': !!avatarPreview }">
+          <img v-if="avatarPreview" :src="avatarPreview" alt="我的头像" />
+          <template v-else>{{ initials }}</template>
+        </div>
         <div class="identity-body">
           <h2 class="identity-name">{{ profile.username }}</h2>
           <p class="identity-email">{{ profile.email }}</p>
           <span class="badge badge-green">{{ roleText }}</span>
         </div>
+        <button class="btn btn-ghost btn-sm" :disabled="uploading" @click="pickAvatar">
+          {{ uploading ? '上传中…' : '更换头像' }}
+        </button>
+        <input
+          ref="fileInput"
+          class="visually-hidden"
+          type="file"
+          accept="image/png,image/jpeg,image/gif,image/webp"
+          @change="onAvatarChange"
+        />
       </section>
 
       <!-- 右侧：资料与操作 -->
@@ -176,6 +223,30 @@ async function onDelete() {
 
 .identity-name {
   font-size: 22px;
+}
+
+.avatar-img {
+  padding: 0;
+  overflow: hidden;
+  background: var(--c-primary-soft);
+}
+
+.avatar-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .identity-email {
