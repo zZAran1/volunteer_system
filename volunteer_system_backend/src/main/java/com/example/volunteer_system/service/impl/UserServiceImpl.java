@@ -33,7 +33,7 @@ import java.util.UUID;
 public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements UserService  {
     private final BCryptPasswordUtil bCryptPasswordUtil = new BCryptPasswordUtil();
     private final JwtUtil jwtUtil;
-    @Value("{file.upload.path}")
+    @Value("${file.upload.path}")
     private String uploadPath;
     @Override
     public void register(RegisterDTO dto){

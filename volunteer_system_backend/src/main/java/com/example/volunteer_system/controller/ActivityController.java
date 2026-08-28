@@ -33,6 +33,11 @@ public class ActivityController {
         List<ActivityVO> list=activityService.getAllActivities();
         return Result.success(list);
     }
+    @GetMapping("/viewActivity")
+    public Result<List<ActivityVO>> viewActivities() {
+        List<ActivityVO> list=activityService.viewActivities();
+        return Result.success(list);
+    }
     @GetMapping("/getMyActivity")
     public Result<List<ActivityVO>> getMyActivity() {
         List<ActivityVO> list=activityService.getMyActivities();

@@ -8,6 +8,7 @@ import com.example.volunteer_system.model.vo.CaptchaVO;
 import com.example.volunteer_system.service.CaptchaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class CaptchaServiceImpl implements CaptchaService {
     private static final String CAPTCHA_KEY_PREFIX = "captcha:";
     private static final int CAPTCHA_TTL_SECONDS = 300; // 5分钟
-
-    private StringRedisTemplate redisTemplate;
+    private final StringRedisTemplate redisTemplate;
     @Override
     public CaptchaVO generateCaptcha(){
         // 1. 生成图片（Hutool）

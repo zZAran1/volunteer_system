@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface ActivityMapper extends BaseMapper<Activity> {
-    List<ActivityVO> selectAllActivity();
+    List<ActivityVO> adminSelectAllActivity();
+    List<ActivityVO> userSelectAllActivity();
     List<ActivityVO> selectMyActivity(@Param("posterId") Integer posterId);
 }

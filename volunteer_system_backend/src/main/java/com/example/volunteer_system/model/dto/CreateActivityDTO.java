@@ -1,6 +1,7 @@
 package com.example.volunteer_system.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -16,6 +17,6 @@ public class CreateActivityDTO {
     private LocalDate end_date;
     @NotBlank(message = "活动描述不能为空")
     private String description;
-    @NotBlank(message = "报名人数上限不能为空")
+    @NotNull(message = "报名人数上限不能为空")
     private Integer headcount_limit;
 }

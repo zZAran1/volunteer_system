@@ -1,11 +1,14 @@
 package com.example.volunteer_system.converter;
 
 import com.example.volunteer_system.model.dto.CreateActivityDTO;
+import com.example.volunteer_system.model.dto.PersonalDTO;
 import com.example.volunteer_system.model.dto.RegisterDTO;
 import com.example.volunteer_system.model.dto.UpdateActivityDTO;
 import com.example.volunteer_system.model.entity.Activity;
+import com.example.volunteer_system.model.entity.Personal;
 import com.example.volunteer_system.model.entity.Users;
 import com.example.volunteer_system.model.vo.ActivityVO;
+import com.example.volunteer_system.model.vo.PersonalVO;
 import com.example.volunteer_system.model.vo.ProfileVO;
 import com.example.volunteer_system.model.vo.UserVO;
 import org.mapstruct.Mapper;
@@ -22,4 +25,6 @@ public interface Converter {
     UserVO toUsersVO(Users users);
     Activity toActivity(CreateActivityDTO dto);
     Activity toActivity(UpdateActivityDTO dto);
+    Personal toPersonal(PersonalDTO dto);
+    PersonalVO toPersonalVO(Personal personal);
 }

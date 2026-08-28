@@ -46,12 +46,15 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     }
     @Override
     public List<ActivityVO> getAllActivities() {
-        if(UserContext.getRole()!=0 && UserContext.getRole()!=1){
-            throw new TokenException("该账号的权限不够");
+        if(UserContext.getRole()!=0&&UserContext.getUserId()!=1){
+            throw new TokenException("该账号没权限进行该操作");
         }
-        return this.baseMapper.selectAllActivity();
+        return this.baseMapper.adminSelectAllActivity();
     }
-
+    @Override
+    public List<ActivityVO> viewActivities(){
+        return this.baseMapper.userSelectAllActivity();
+    }
     @Override
     public List<ActivityVO> getMyActivities() {
         int userId = UserContext.getUserId();

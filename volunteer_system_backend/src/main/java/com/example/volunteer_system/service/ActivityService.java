@@ -12,6 +12,7 @@ public interface ActivityService extends IService<Activity> {
     void createActivity(CreateActivityDTO dto);
     void updateActivity(UpdateActivityDTO dto);
     List<ActivityVO> getAllActivities();
+    List<ActivityVO> viewActivities();
     List<ActivityVO> getMyActivities();
     void deleteActivity(UpdateActivityDTO dto);
 }
