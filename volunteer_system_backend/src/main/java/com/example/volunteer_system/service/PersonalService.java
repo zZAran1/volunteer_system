@@ -6,7 +6,7 @@ import com.example.volunteer_system.model.entity.Personal;
 import com.example.volunteer_system.model.vo.PersonalVO;
 
 public interface PersonalService extends IService<Personal> {
-    void createPersonal(PersonalDTO dto);
+    void createPersonal();
     void updatePersonal(PersonalDTO dto);
     PersonalVO getPersonal();
 }

@@ -5,7 +5,12 @@ import type {
   UpdateActivityDTO,
 } from '@/types/api'
 
-/** 活动广场：全部活动列表 */
+/** 活动广场：公开可见（已审核通过）的活动列表 */
+export function viewActivities(): Promise<ActivityVO[]> {
+  return get<ActivityVO[]>('/activity/viewActivity')
+}
+
+/** 全部活动列表（仅管理员 / 超级管理员可用） */
 export function getAllActivities(): Promise<ActivityVO[]> {
   return get<ActivityVO[]>('/activity/getAllActivity')
 }

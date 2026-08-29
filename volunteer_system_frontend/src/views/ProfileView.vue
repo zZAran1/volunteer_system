@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { deleteUser, getProfile, updateProfile, uploadAvatar } from '@/api/user'
+import { getPersonal, updatePersonal } from '@/api/personal'
+import { roleLabel, type PersonalDTO } from '@/types/api'
 import { authState, clearAuth, setProfile } from '@/stores/auth'
-import { roleLabel } from '@/types/api'
 import { useToast } from '@/composables/toast'
 
 const router = useRouter()
@@ -22,6 +23,92 @@ const deleting = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
 const avatarPreview = ref('')
 const uploading = ref(false)
+
+/** 个人真实信息表单 */
+const personalForm = reactive({
+  realName: '',
+  email: '',
+  phone: '',
+  age: '',
+  gender: '',
+  idNumber: '',
+  current_address: '',
+})
+const personalLoading = ref(true)
+const savingPersonal = ref(false)
+
+function fillPersonalForm(p: {
+  realName?: string
+  email?: string
+  phone?: string
+  age?: number
+  gender?: string
+  idNumber?: string
+  current_address?: string
+}) {
+  personalForm.realName = p.realName ?? ''
+  personalForm.email = p.email ?? ''
+  personalForm.phone = p.phone ?? ''
+  personalForm.age = p.age != null ? String(p.age) : ''
+  personalForm.gender = p.gender ?? ''
+  personalForm.idNumber = p.idNumber ?? ''
+  personalForm.current_address = p.current_address ?? ''
+}
+
+async function loadPersonal() {
+  personalLoading.value = true
+  try {
+    const p = await getPersonal()
+    fillPersonalForm(p ?? {})
+  } catch {
+    // 尚未创建个人真实信息记录时保持空表单，等待用户填写
+    fillPersonalForm({})
+  } finally {
+    personalLoading.value = false
+  }
+}
+
+function validatePersonal(): string | null {
+  if (
+    personalForm.age !== '' &&
+    (!Number.isInteger(Number(personalForm.age)) ||
+      Number(personalForm.age) < 1 ||
+      Number(personalForm.age) > 120)
+  ) {
+    return '年龄需为 1-120 之间的整数'
+  }
+  const idNumber = personalForm.idNumber.trim()
+  if (idNumber && !/^\d{17}[\dXx]$/.test(idNumber)) {
+    return '身份证号格式不正确'
+  }
+  return null
+}
+
+async function onSavePersonal() {
+  const msg = validatePersonal()
+  if (msg) {
+    toast.error(msg)
+    return
+  }
+  const payload: PersonalDTO = {
+    realName: personalForm.realName.trim(),
+    email: personalForm.email.trim(),
+    phone: personalForm.phone.trim(),
+    age: personalForm.age === '' ? undefined : Number(personalForm.age),
+    gender: personalForm.gender,
+    idNumber: personalForm.idNumber.trim(),
+    current_address: personalForm.current_address.trim(),
+  }
+  savingPersonal.value = true
+  try {
+    await updatePersonal(payload)
+    toast.success('个人真实信息已保存')
+  } catch (e) {
+    toast.error((e as Error).message)
+  } finally {
+    savingPersonal.value = false
+  }
+}
 
 function pickAvatar() {
   fileInput.value?.click()
@@ -55,6 +142,7 @@ async function onAvatarChange(e: Event) {
 
 onMounted(() => {
   username.value = profile.value?.username ?? ''
+  loadPersonal()
 })
 
 function formatDate(value: string): string {
@@ -178,6 +266,103 @@ async function onDelete() {
           </div>
         </section>
 
+        <section class="card card-pad">
+          <h3 class="section-title">个人真实信息</h3>
+          <p class="muted personal-hint">
+            用于身份核验与活动保障，仅自己可见。尚未填写时可在此完善。
+          </p>
+          <div v-if="personalLoading" class="personal-empty">
+            <div class="spinner" aria-hidden="true"></div>
+            <p class="muted">正在加载个人真实信息…</p>
+          </div>
+          <form v-else class="personal-form" novalidate @submit.prevent="onSavePersonal">
+            <div class="p-grid">
+              <div class="field">
+                <label class="field-label" for="p-realname">真实姓名</label>
+                <input
+                  id="p-realname"
+                  v-model="personalForm.realName"
+                  class="input"
+                  type="text"
+                  maxlength="30"
+                  placeholder="请输入真实姓名"
+                />
+              </div>
+              <div class="field">
+                <label class="field-label" for="p-gender">性别</label>
+                <select id="p-gender" v-model="personalForm.gender" class="input">
+                  <option value="">未选择</option>
+                  <option value="男">男</option>
+                  <option value="女">女</option>
+                  <option value="其他">其他</option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="field-label" for="p-age">年龄</label>
+                <input
+                  id="p-age"
+                  v-model="personalForm.age"
+                  class="input"
+                  type="number"
+                  min="1"
+                  max="120"
+                  step="1"
+                  placeholder="1-120"
+                />
+              </div>
+              <div class="field">
+                <label class="field-label" for="p-phone">联系电话</label>
+                <input
+                  id="p-phone"
+                  v-model="personalForm.phone"
+                  class="input"
+                  type="tel"
+                  maxlength="20"
+                  placeholder="请输入手机号"
+                />
+              </div>
+              <div class="field">
+                <label class="field-label" for="p-email">联系邮箱</label>
+                <input
+                  id="p-email"
+                  v-model="personalForm.email"
+                  class="input"
+                  type="email"
+                  maxlength="50"
+                  placeholder="可用于接收活动通知"
+                />
+              </div>
+              <div class="field">
+                <label class="field-label" for="p-idnumber">身份证号</label>
+                <input
+                  id="p-idnumber"
+                  v-model="personalForm.idNumber"
+                  class="input"
+                  type="text"
+                  maxlength="18"
+                  placeholder="18 位身份证号（选填）"
+                />
+              </div>
+              <div class="field p-full">
+                <label class="field-label" for="p-address">现居地址</label>
+                <input
+                  id="p-address"
+                  v-model="personalForm.current_address"
+                  class="input"
+                  type="text"
+                  maxlength="100"
+                  placeholder="请输入当前居住地址"
+                />
+              </div>
+            </div>
+            <div class="p-actions">
+              <button class="btn btn-primary" type="submit" :disabled="savingPersonal">
+                {{ savingPersonal ? '保存中…' : '保存个人真实信息' }}
+              </button>
+            </div>
+          </form>
+        </section>
+
         <section class="card card-pad danger-zone">
           <div>
             <h3 class="section-title text-danger">注销账户</h3>
@@ -298,6 +483,54 @@ async function onDelete() {
   flex: 1;
 }
 
+.personal-hint {
+  margin: -6px 0 18px;
+  font-size: 13px;
+}
+
+.personal-empty {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 0;
+}
+
+.personal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.p-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.p-full {
+  grid-column: 1 / -1;
+}
+
+.p-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.spinner {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 3px solid var(--c-primary-soft);
+  border-top-color: var(--c-primary);
+  animation: profile-spin 0.8s linear infinite;
+}
+
+@keyframes profile-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .danger-zone {
   display: flex;
   align-items: center;
@@ -324,6 +557,10 @@ async function onDelete() {
 
   .edit-row {
     flex-direction: column;
+  }
+
+  .p-grid {
+    grid-template-columns: 1fr;
   }
 }
 </style>

@@ -14,12 +14,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class PersonalServiceImpl extends ServiceImpl<PersonalMapper, Personal> implements PersonalService {
     @Override
-    public void createPersonal(PersonalDTO dto){
+    public void createPersonal(){
         int user_id= UserContext.getUserId();
-        if(this.lambdaQuery().eq(Personal::getUser_id,user_id)!=null){
+        if(this.lambdaQuery().eq(Personal::getUser_id,user_id).exists()){
             throw new ProfileException("每个账号对应一份个人真实信息");
         }
-        Personal personal = Converter.INSTANCE.toPersonal(dto);
+        Personal personal = new Personal();
         personal.setUser_id(user_id);
         this.save(personal);
     }

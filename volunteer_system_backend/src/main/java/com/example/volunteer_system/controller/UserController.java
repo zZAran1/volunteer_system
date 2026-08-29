@@ -7,6 +7,7 @@ import com.example.volunteer_system.model.vo.LoginVO;
 import com.example.volunteer_system.model.vo.ProfileVO;
 import com.example.volunteer_system.result.Result;
 import com.example.volunteer_system.service.CaptchaService;
+import com.example.volunteer_system.service.PersonalService;
 import com.example.volunteer_system.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,10 +22,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
     private final UserService userService;
     private final CaptchaService captchaService;
+    private final PersonalService personalService;
 
     @PostMapping("/register")
     public Result<Void> register(@Valid @RequestBody RegisterDTO dto) {
         userService.register(dto);
+        personalService.createPersonal();
         return Result.success("注册成功");
     }
     @GetMapping("/captcha")

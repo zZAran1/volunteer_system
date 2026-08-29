@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { getAllActivities } from '@/api/activity'
+import { viewActivities } from '@/api/activity'
 import {
   ACTIVITY_STATUS,
   activityStatusLabel,
@@ -27,7 +27,7 @@ async function load() {
   loading.value = true
   loadError.value = ''
   try {
-    activities.value = await getAllActivities()
+    activities.value = await viewActivities()
   } catch (e) {
     loadError.value = (e as Error).message
   } finally {

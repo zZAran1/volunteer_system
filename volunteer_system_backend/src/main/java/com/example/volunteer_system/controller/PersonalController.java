@@ -1,10 +1,12 @@
 package com.example.volunteer_system.controller;
 
+import com.example.volunteer_system.model.dto.PersonalDTO;
+import com.example.volunteer_system.model.vo.PersonalVO;
+import com.example.volunteer_system.result.Result;
 import com.example.volunteer_system.service.PersonalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/personal")
@@ -12,6 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class PersonalController {
     private final PersonalService personalService;
-
-
+    @PutMapping("/updatePersonal")
+    public Result<Void> updatePersonal(@Validated @RequestBody PersonalDTO dto) {
+        personalService.updatePersonal(dto);
+        return Result.success("更新信息成功");
+    }
+    @GetMapping("/getPersonal")
+    public Result<PersonalVO> getPersonal(){
+        return Result.success(personalService.getPersonal());
+    }
 }

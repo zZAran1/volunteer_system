@@ -40,6 +40,28 @@ export interface LoginVO {
   token: string
 }
 
+/** 个人真实信息视图对象（后端 PersonalVO，JSON 字段与后端实体一致） */
+export interface PersonalVO {
+  realName: string
+  email: string
+  phone: string
+  age: number
+  gender: string
+  idNumber: string
+  current_address: string
+}
+
+/** 更新个人真实信息入参（后端 PersonalDTO） */
+export interface PersonalDTO {
+  realName?: string
+  email?: string
+  phone?: string
+  age?: number
+  gender?: string
+  idNumber?: string
+  current_address?: string
+}
+
 /** 个人资料 */
 export interface ProfileVO {
   username: string
