@@ -22,12 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserController {
     private final UserService userService;
     private final CaptchaService captchaService;
-    private final PersonalService personalService;
 
     @PostMapping("/register")
     public Result<Void> register(@Valid @RequestBody RegisterDTO dto) {
         userService.register(dto);
-        personalService.createPersonal();
         return Result.success("注册成功");
     }
     @GetMapping("/captcha")

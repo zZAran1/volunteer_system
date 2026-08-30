@@ -1,4 +1,5 @@
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\result\Result.java
+D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\mapper\RegistrationMapper.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\util\JwtUtil.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\controller\ActivityController.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\controller\UserController.java
@@ -8,6 +9,7 @@ D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volun
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\model\dto\UpdateActivityDTO.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\service\impl\UserServiceImpl.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\exception\LoginException.java
+D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\service\impl\RegistrationServiceImpl.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\util\UserContext.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\mapper\PersonalMapper.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\model\dto\ChangeRoleDTO.java
@@ -16,6 +18,7 @@ D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volun
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\VolunteerSystemApplication.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\model\entity\Users.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\service\PersonalService.java
+D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\service\RegistrationService.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\model\dto\RegistrationDTO.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\model\vo\UserVO.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\model\dto\UpdateProfileDTO.java
@@ -28,7 +31,6 @@ D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volun
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\converter\Converter.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\model\vo\ActivityVO.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\util\BCryptPasswordUtil.java
-D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\model\vo\AvatarUpdateVO.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\exception\BaseBusinessException.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\service\impl\ActivityServiceImpl.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\config\WebMvcConfig.java

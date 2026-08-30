@@ -3,10 +3,11 @@ package com.example.volunteer_system.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.volunteer_system.model.entity.Activity;
 import com.example.volunteer_system.model.vo.ActivityVO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-
+@Mapper
 public interface ActivityMapper extends BaseMapper<Activity> {
     List<ActivityVO> adminSelectAllActivity();
     List<ActivityVO> userSelectAllActivity();

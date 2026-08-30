@@ -204,7 +204,7 @@ onMounted(load)
                       :disabled="busyEmail === u.email"
                       @click="assignRole(u, ROLE.USER)"
                     >
-                      设为志愿者
+                      设为普通用户
                     </button>
                   </template>
 

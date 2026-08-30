@@ -2,7 +2,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { deleteUser, getProfile, updateProfile, uploadAvatar } from '@/api/user'
-import { getPersonal, updatePersonal } from '@/api/personal'
+import { createPersonal, getPersonal, updatePersonal } from '@/api/personal'
 import { roleLabel, type PersonalDTO } from '@/types/api'
 import { authState, clearAuth, setProfile } from '@/stores/auth'
 import { useToast } from '@/composables/toast'
@@ -23,6 +23,9 @@ const deleting = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
 const avatarPreview = ref('')
 const uploading = ref(false)
+
+/** 头像展示：优先本地预览（刚上传未刷新时），否则回显服务器头像 */
+const avatarSrc = computed(() => avatarPreview.value || profile.value?.image_url || '')
 
 /** 个人真实信息表单 */
 const personalForm = reactive({
@@ -58,10 +61,16 @@ function fillPersonalForm(p: {
 async function loadPersonal() {
   personalLoading.value = true
   try {
-    const p = await getPersonal()
+    let p = await getPersonal()
+    if (!p) {
+      // 老账号可能没有 personal 记录（注册时未自动创建），先创建空行再加载，
+      // 否则后续 updatePersonal 更新不到任何行
+      await createPersonal()
+      p = await getPersonal()
+    }
     fillPersonalForm(p ?? {})
   } catch {
-    // 尚未创建个人真实信息记录时保持空表单，等待用户填写
+    // 接口异常时保持空表单，等待用户填写
     fillPersonalForm({})
   } finally {
     personalLoading.value = false
@@ -130,8 +139,10 @@ async function onAvatarChange(e: Event) {
   uploading.value = true
   try {
     await uploadAvatar(file)
+    // 上传成功后拉取最新资料（含 image_url），并清除本地临时预览
+    setProfile(await getProfile())
     if (avatarPreview.value) URL.revokeObjectURL(avatarPreview.value)
-    avatarPreview.value = URL.createObjectURL(file)
+    avatarPreview.value = ''
     toast.success('头像已更新')
   } catch (err) {
     toast.error((err as Error).message)
@@ -209,8 +220,8 @@ async function onDelete() {
     <div v-else class="profile-grid animate-in">
       <!-- 左侧：身份卡片 -->
       <section class="card card-pad identity">
-        <div class="avatar avatar-lg" :class="{ 'avatar-img': !!avatarPreview }">
-          <img v-if="avatarPreview" :src="avatarPreview" alt="我的头像" />
+        <div class="avatar avatar-lg" :class="{ 'avatar-img': !!avatarSrc }">
+          <img v-if="avatarSrc" :src="avatarSrc" alt="我的头像" />
           <template v-else>{{ initials }}</template>
         </div>
         <div class="identity-body">

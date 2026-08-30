@@ -11,7 +11,6 @@ import com.example.volunteer_system.model.entity.Activity;
 import com.example.volunteer_system.model.vo.ActivityVO;
 import com.example.volunteer_system.service.ActivityService;
 import com.example.volunteer_system.util.UserContext;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,9 +18,7 @@ import java.util.List;
 
 
 @Service
-@RequiredArgsConstructor
 public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> implements ActivityService {
-    private final UserMapper userMapper;
 
     @Override
     public void createActivity(CreateActivityDTO dto) {

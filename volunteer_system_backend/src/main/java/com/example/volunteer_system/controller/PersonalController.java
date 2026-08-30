@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class PersonalController {
     private final PersonalService personalService;
+    @PostMapping("/createPersonal")
+    public Result<Void> createPersonal() {
+        personalService.createPersonal();
+        return Result.success("/创建个人信息成功");
+    }
     @PutMapping("/updatePersonal")
     public Result<Void> updatePersonal(@Validated @RequestBody PersonalDTO dto) {
         personalService.updatePersonal(dto);

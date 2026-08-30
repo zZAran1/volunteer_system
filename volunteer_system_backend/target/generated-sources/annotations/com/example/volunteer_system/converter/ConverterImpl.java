@@ -1,7 +1,6 @@
 package com.example.volunteer_system.converter;
 
 import com.example.volunteer_system.model.dto.CreateActivityDTO;
-import com.example.volunteer_system.model.dto.PersonalDTO;
 import com.example.volunteer_system.model.dto.RegisterDTO;
 import com.example.volunteer_system.model.dto.UpdateActivityDTO;
 import com.example.volunteer_system.model.entity.Activity;
@@ -15,8 +14,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-08-29T23:27:47+0800",
-    comments = "version: 1.6.3, compiler: javac, environment: Java 21.0.10 (Eclipse Adoptium)"
+    date = "2026-08-30T22:02:20+0800",
+    comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.46.100.v20260624-0231, environment: Java 21.0.11 (Eclipse Adoptium)"
 )
 @Component
 public class ConverterImpl implements Converter {
@@ -48,6 +47,7 @@ public class ConverterImpl implements Converter {
         profileVO.setEmail( user.getEmail() );
         profileVO.setCreated_at( user.getCreated_at() );
         profileVO.setRole( user.getRole() );
+        profileVO.setImage_url( user.getImage_url() );
 
         return profileVO;
     }
@@ -105,25 +105,6 @@ public class ConverterImpl implements Converter {
         activity.setHeadcount_limit( dto.getHeadcount_limit() );
 
         return activity;
-    }
-
-    @Override
-    public Personal toPersonal(PersonalDTO dto) {
-        if ( dto == null ) {
-            return null;
-        }
-
-        Personal personal = new Personal();
-
-        personal.setRealName( dto.getRealName() );
-        personal.setEmail( dto.getEmail() );
-        personal.setPhone( dto.getPhone() );
-        personal.setAge( dto.getAge() );
-        personal.setGender( dto.getGender() );
-        personal.setIdNumber( dto.getIdNumber() );
-        personal.setCurrent_address( dto.getCurrent_address() );
-
-        return personal;
     }
 
     @Override

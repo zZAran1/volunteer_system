@@ -68,6 +68,8 @@ export interface ProfileVO {
   email: string
   created_at: string
   role: number
+  /** 头像地址（后端 /uploads/xxx，可为空） */
+  image_url?: string
 }
 
 /** 用户列表项（管理端） */
@@ -80,7 +82,7 @@ export interface UserVO {
   status: number
 }
 
-/** 角色枚举：0 超级管理员 · 1 管理员 · 2 志愿者 */
+/** 角色枚举：0 超级管理员 · 1 管理员 · 2 普通用户 */
 export const ROLE = {
   SUPER_ADMIN: 0,
   ADMIN: 1,
@@ -100,7 +102,7 @@ export function roleLabel(role: number): string {
     case ROLE.ADMIN:
       return '管理员'
     case ROLE.USER:
-      return '志愿者'
+      return '普通用户'
     default:
       return '未知'
   }

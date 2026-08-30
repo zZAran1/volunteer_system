@@ -18,6 +18,7 @@ const isAdmin = computed(() => {
 
 const displayName = computed(() => authState.profile?.username || '志愿者')
 const initials = computed(() => displayName.value.slice(0, 1).toUpperCase() || '志')
+const avatarImg = computed(() => authState.profile?.image_url || '')
 const roleText = computed(() => {
   const r = authState.profile?.role
   return r == null ? '' : roleLabel(r)
@@ -83,7 +84,10 @@ watch(isAuthenticated, (val) => {
 
         <div class="topbar-user">
           <div class="topbar-who">
-            <span class="avatar">{{ initials }}</span>
+            <span class="avatar" :class="{ 'avatar-img': !!avatarImg }">
+              <img v-if="avatarImg" :src="avatarImg" alt="头像" />
+              <template v-else>{{ initials }}</template>
+            </span>
             <div class="topbar-meta">
               <span class="topbar-name">{{ displayName }}</span>
               <span class="topbar-role">{{ roleText }}</span>
@@ -103,6 +107,17 @@ watch(isAuthenticated, (val) => {
 </template>
 
 <style scoped>
+.avatar-img {
+  overflow: hidden;
+  background: var(--c-primary-soft);
+}
+
+.avatar-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 @media (max-width: 860px) {
   .topbar-nav {
     gap: 2px;

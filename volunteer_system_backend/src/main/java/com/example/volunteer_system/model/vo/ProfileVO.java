@@ -9,4 +9,5 @@ public class ProfileVO {
     private String email;
     private LocalDate created_at;
     private Integer role;
+    private String image_url;
 }

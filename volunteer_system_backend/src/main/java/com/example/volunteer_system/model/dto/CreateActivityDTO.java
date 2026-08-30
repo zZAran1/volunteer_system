@@ -11,9 +11,9 @@ public class CreateActivityDTO {
     private String title;
     @NotBlank(message = "活动地址不能为空")
     private String address;
-    @NotBlank(message = "开始时间不能为空")
+    @NotNull(message = "开始时间不能为空")
     private LocalDate start_date;
-    @NotBlank(message = "结束时间不能为空")
+    @NotNull(message = "结束时间不能为空")
     private LocalDate end_date;
     @NotBlank(message = "活动描述不能为空")
     private String description;
