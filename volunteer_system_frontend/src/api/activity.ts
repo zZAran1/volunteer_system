@@ -20,6 +20,11 @@ export function getMyActivities(): Promise<ActivityVO[]> {
   return get<ActivityVO[]>('/activity/getMyActivity')
 }
 
+/** 我报名的活动列表 */
+export function getRegisteredActivities(): Promise<ActivityVO[]> {
+  return get<ActivityVO[]>('/activity/getRegistered')
+}
+
 /** 发布活动 */
 export function createActivity(dto: CreateActivityDTO): Promise<void> {
   return post<void>('/activity/create', dto)

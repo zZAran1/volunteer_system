@@ -66,6 +66,13 @@ watch(isAuthenticated, (val) => {
             活动广场
           </RouterLink>
           <RouterLink
+            to="/my-registrations"
+            class="nav-link"
+            :class="{ 'is-active': route.name === 'myRegistrations' }"
+          >
+            我的报名
+          </RouterLink>
+          <RouterLink
             to="/my-activities"
             class="nav-link"
             :class="{ 'is-active': route.name === 'myActivities' }"

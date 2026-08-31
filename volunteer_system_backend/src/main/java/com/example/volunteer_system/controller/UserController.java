@@ -7,7 +7,6 @@ import com.example.volunteer_system.model.vo.LoginVO;
 import com.example.volunteer_system.model.vo.ProfileVO;
 import com.example.volunteer_system.result.Result;
 import com.example.volunteer_system.service.CaptchaService;
-import com.example.volunteer_system.service.PersonalService;
 import com.example.volunteer_system.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

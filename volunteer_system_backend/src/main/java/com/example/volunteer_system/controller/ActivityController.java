@@ -28,19 +28,24 @@ public class ActivityController {
         activityService.updateActivity(dto);
         return Result.success("修改活动内容成功，待管理员审核");
     }
-    @GetMapping("/getAllActivity")
+    @GetMapping("/getAllActivity")//管理员看到的所有活动
     public Result<List<ActivityVO>> getAllActivity() {
         List<ActivityVO> list=activityService.getAllActivities();
         return Result.success(list);
     }
-    @GetMapping("/viewActivity")
+    @GetMapping("/viewActivity")//用户看到的所有活动（已审核）
     public Result<List<ActivityVO>> viewActivities() {
         List<ActivityVO> list=activityService.viewActivities();
         return Result.success(list);
     }
-    @GetMapping("/getMyActivity")
+    @GetMapping("/getMyActivity")//用户发布的活动
     public Result<List<ActivityVO>> getMyActivity() {
         List<ActivityVO> list=activityService.getMyActivities();
+        return Result.success(list);
+    }
+    @GetMapping("/getRegistered")//用户报名的活动
+    public Result<List<ActivityVO>> getRegistered() {
+        List<ActivityVO> list=activityService.getRegistered();
         return Result.success(list);
     }
     @DeleteMapping("/delete")

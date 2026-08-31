@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.volunteer_system.converter.Converter;
 import com.example.volunteer_system.exception.TokenException;
 import com.example.volunteer_system.mapper.ActivityMapper;
-import com.example.volunteer_system.mapper.UserMapper;
 import com.example.volunteer_system.model.dto.CreateActivityDTO;
 import com.example.volunteer_system.model.dto.UpdateActivityDTO;
 import com.example.volunteer_system.model.entity.Activity;
@@ -56,6 +55,11 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     public List<ActivityVO> getMyActivities() {
         int userId = UserContext.getUserId();
         return this.baseMapper.selectMyActivity(userId);
+    }
+    @Override
+    public List<ActivityVO> getRegistered(){
+        int userId = UserContext.getUserId();
+        return this.baseMapper.selectRegistered(userId);
     }
     @Override
     public void deleteActivity(UpdateActivityDTO dto) {

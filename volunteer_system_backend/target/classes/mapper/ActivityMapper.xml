@@ -50,5 +50,21 @@
         WHERE a.status=1
         ORDER BY a.id DESC
     </select>
-
+    <select id="selectRegistered" resultType="com.example.volunteer_system.model.vo.ActivityVO">
+        SELECT a.id,
+               a.title,
+               a.address,
+               a.start_date,
+               a.end_date,
+               a.description,
+               a.headcount,
+               a.headcount_limit,
+               a.status,
+               u.username AS poster_name
+        FROM registration r
+            JOIN activity a on r.activity_id=a.id
+            JOIN users u ON a.poster_id =u.id
+        WHERE r.registrant_id=#{MyId}
+        ORDER BY a.start_date ASC
+    </select>
 </mapper>

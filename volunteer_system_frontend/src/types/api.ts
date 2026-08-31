@@ -152,6 +152,11 @@ export interface UpdateActivityDTO extends CreateActivityDTO {
   id: number
 }
 
+/** 报名 / 取消报名入参（后端 RegistrationDTO，接口为表单/查询参数绑定） */
+export interface RegistrationDTO {
+  activity_id: number
+}
+
 /** 活动状态：0 待审核 · 1 招募中 */
 export const ACTIVITY_STATUS = {
   PENDING: 0,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { getRegisteredActivities, viewActivities } from '@/api/activity'
-import { registrant, unRegistrant } from '@/api/registration'
+import { getRegisteredActivities } from '@/api/activity'
+import { unRegistrant } from '@/api/registration'
 import { authState } from '@/stores/auth'
 import {
   ACTIVITY_STATUS,
@@ -16,8 +16,6 @@ const activities = ref<ActivityVO[]>([])
 const loading = ref(true)
 const loadError = ref('')
 const keyword = ref('')
-/** 当前用户已报名的活动 id 集合 */
-const registeredIds = ref<Set<number>>(new Set())
 const busyId = ref<number | null>(null)
 
 const filtered = computed(() => {
@@ -35,8 +33,7 @@ async function load() {
   loading.value = true
   loadError.value = ''
   try {
-    activities.value = await viewActivities()
-    registeredIds.value = new Set((await getRegisteredActivities()).map((a) => a.id))
+    activities.value = await getRegisteredActivities()
   } catch (e) {
     loadError.value = (e as Error).message
   } finally {
@@ -44,44 +41,13 @@ async function load() {
   }
 }
 
-/** 自己发布的活动不需要报名 */
-function isMine(a: ActivityVO): boolean {
-  return !!a.poster_name && a.poster_name === authState.profile?.username
-}
-
-function isFull(a: ActivityVO): boolean {
-  return !!a.headcount_limit && (a.headcount ?? 0) >= a.headcount_limit
-}
-
-/** 静默刷新：操作成功后重新拉取列表与报名状态，保证人数与后端一致 */
-async function refreshQuietly() {
-  try {
-    const [list, registered] = await Promise.all([
-      viewActivities(),
-      getRegisteredActivities(),
-    ])
-    activities.value = list
-    registeredIds.value = new Set(registered.map((x) => x.id))
-  } catch {
-    // 静默刷新失败不影响已完成的报名操作，下次手动刷新可恢复
-  }
-}
-
-async function onRegister(a: ActivityVO) {
-  const registered = registeredIds.value.has(a.id)
-  // 取消报名是破坏性操作，先确认，避免误触
-  if (registered && !window.confirm(`确定要取消报名「${a.title}」吗？`)) return
+async function onCancel(a: ActivityVO) {
+  if (!window.confirm(`确定要取消报名「${a.title}」吗？`)) return
   busyId.value = a.id
   try {
-    if (registered) {
-      await unRegistrant(a.id)
-      toast.success('已取消报名')
-    } else {
-      await registrant(a.id)
-      toast.success('报名成功')
-    }
-    // 人数增减由后端维护，成功后拉取最新数据覆盖本地展示
-    await refreshQuietly()
+    await unRegistrant(a.id)
+    toast.success('已取消报名')
+    await load()
   } catch (e) {
     toast.error((e as Error).message)
   } finally {
@@ -100,18 +66,6 @@ function dateRange(a: ActivityVO): string {
   return `${formatDate(a.start_date)} — ${formatDate(a.end_date)}`
 }
 
-function progressOf(a: ActivityVO): number {
-  const limit = a.headcount_limit
-  if (!limit) return 0
-  return Math.min(100, Math.round(((a.headcount ?? 0) / limit) * 100))
-}
-
-function headcountText(a: ActivityVO): string {
-  return a.headcount_limit
-    ? `${a.headcount ?? 0} / ${a.headcount_limit}`
-    : `已报名 ${a.headcount ?? 0} 人 · 不限人数`
-}
-
 function statusClass(status: number): string {
   if (status === ACTIVITY_STATUS.RECRUITING) return 'badge-green'
   if (status === ACTIVITY_STATUS.PENDING) return 'badge-accent'
@@ -125,10 +79,10 @@ onMounted(load)
   <div class="container">
     <div class="page-head animate-in">
       <div>
-        <h1 class="page-title">活动广场</h1>
-        <p class="muted">浏览平台上的志愿服务，向每一份善意靠近。</p>
+        <h1 class="page-title">我的报名</h1>
+        <p class="muted">查看你已报名的志愿活动，可以随时取消报名。</p>
       </div>
-      <button class="btn btn-ghost" :disabled="loading" @click="load">刷新活动</button>
+      <button class="btn btn-ghost" :disabled="loading" @click="load">刷新列表</button>
     </div>
 
     <div class="toolbar animate-in">
@@ -158,7 +112,7 @@ onMounted(load)
 
     <div v-if="loading" class="empty">
       <div class="spinner" aria-hidden="true"></div>
-      <p class="empty-title">正在加载活动…</p>
+      <p class="empty-title">正在加载报名记录…</p>
     </div>
 
     <div v-else-if="!loadError && filtered.length === 0" class="empty">
@@ -179,8 +133,8 @@ onMounted(load)
           />
         </svg>
       </div>
-      <p class="empty-title">{{ keyword ? '没有匹配的活动' : '暂无可浏览的活动' }}</p>
-      <p class="empty-desc">{{ keyword ? '换个关键词试试' : '新发布的活动会出现在这里' }}</p>
+      <p class="empty-title">{{ keyword ? '没有匹配的报名记录' : '你还没有报名任何活动' }}</p>
+      <p class="empty-desc">{{ keyword ? '换个关键词试试' : '去活动广场看看，遇见想参加的活动就报名吧' }}</p>
     </div>
 
     <div v-else class="activity-grid animate-in">
@@ -208,12 +162,7 @@ onMounted(load)
                 stroke-width="1.4"
                 fill="none"
               />
-              <path
-                d="M2 6.5h12M5.5 2v3M10.5 2v3"
-                stroke="currentColor"
-                stroke-width="1.4"
-                stroke-linecap="round"
-              />
+              <path d="M2 6.5h12M5.5 2v3M10.5 2v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
             </svg>
             <span>{{ dateRange(a) }}</span>
           </div>
@@ -231,37 +180,16 @@ onMounted(load)
           </div>
         </div>
 
-        <div class="activity-progress">
-          <div class="activity-progress-head">
-            <span>报名进度</span>
-            <span>{{ headcountText(a) }}</span>
-          </div>
-          <div class="activity-progress-track">
-            <div
-              class="activity-progress-bar"
-              :style="{ width: `${progressOf(a)}%` }"
-            ></div>
-          </div>
+        <div class="activity-card-footer">
+          <span class="muted">已报名 {{ a.headcount ?? 0 }}{{ a.headcount_limit ? ` / ${a.headcount_limit}` : '' }}</span>
+          <button
+            class="btn btn-danger-ghost btn-sm"
+            :disabled="busyId === a.id"
+            @click="onCancel(a)"
+          >
+            {{ busyId === a.id ? '取消中…' : '取消报名' }}
+          </button>
         </div>
-
-        <button
-          class="btn register-btn"
-          :class="registeredIds.has(a.id) ? 'btn-danger-ghost' : 'btn-primary'"
-          :disabled="busyId === a.id || isMine(a) || isFull(a)"
-          @click="onRegister(a)"
-        >
-          {{
-            busyId === a.id
-              ? '处理中…'
-              : registeredIds.has(a.id)
-                ? '取消报名'
-                : isMine(a)
-                  ? '我发布的'
-                  : isFull(a)
-                    ? '名额已满'
-                    : '报名'
-          }}
-        </button>
       </article>
     </div>
   </div>
@@ -402,40 +330,14 @@ onMounted(load)
   flex: none;
 }
 
-.activity-progress {
+.activity-card-footer {
   margin-top: auto;
   border-top: 1px solid var(--c-line);
   padding-top: 13px;
-}
-
-.activity-progress-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--c-ink-mute);
-  margin-bottom: 7px;
-}
-
-.activity-progress-track {
-  height: 6px;
-  border-radius: var(--r-pill);
-  background: var(--c-surface-soft);
-  border: 1px solid var(--c-line);
-  overflow: hidden;
-}
-
-.activity-progress-bar {
-  height: 100%;
-  border-radius: var(--r-pill);
-  background: linear-gradient(90deg, var(--c-primary), var(--c-accent));
-  transition: width 0.3s ease;
-}
-
-.register-btn {
-  margin-top: 2px;
-  width: 100%;
+  gap: 10px;
 }
 
 @media (max-width: 640px) {

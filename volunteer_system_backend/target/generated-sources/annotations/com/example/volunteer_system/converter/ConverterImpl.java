@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-08-30T22:02:20+0800",
+    date = "2026-08-31T21:23:22+0800",
     comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.46.100.v20260624-0231, environment: Java 21.0.11 (Eclipse Adoptium)"
 )
 @Component
@@ -28,9 +28,9 @@ public class ConverterImpl implements Converter {
 
         Users users = new Users();
 
-        users.setUsername( dto.getUsername() );
-        users.setPassword( dto.getPassword() );
         users.setEmail( dto.getEmail() );
+        users.setPassword( dto.getPassword() );
+        users.setUsername( dto.getUsername() );
 
         return users;
     }
@@ -43,11 +43,11 @@ public class ConverterImpl implements Converter {
 
         ProfileVO profileVO = new ProfileVO();
 
-        profileVO.setUsername( user.getUsername() );
-        profileVO.setEmail( user.getEmail() );
         profileVO.setCreated_at( user.getCreated_at() );
-        profileVO.setRole( user.getRole() );
+        profileVO.setEmail( user.getEmail() );
         profileVO.setImage_url( user.getImage_url() );
+        profileVO.setRole( user.getRole() );
+        profileVO.setUsername( user.getUsername() );
 
         return profileVO;
     }
@@ -60,12 +60,12 @@ public class ConverterImpl implements Converter {
 
         UserVO userVO = new UserVO();
 
-        userVO.setId( users.getId() );
-        userVO.setUsername( users.getUsername() );
-        userVO.setEmail( users.getEmail() );
         userVO.setCreated_at( users.getCreated_at() );
+        userVO.setEmail( users.getEmail() );
+        userVO.setId( users.getId() );
         userVO.setRole( users.getRole() );
         userVO.setStatus( users.getStatus() );
+        userVO.setUsername( users.getUsername() );
 
         return userVO;
     }
@@ -78,12 +78,12 @@ public class ConverterImpl implements Converter {
 
         Activity activity = new Activity();
 
-        activity.setTitle( dto.getTitle() );
         activity.setAddress( dto.getAddress() );
-        activity.setStart_date( dto.getStart_date() );
-        activity.setEnd_date( dto.getEnd_date() );
         activity.setDescription( dto.getDescription() );
+        activity.setEnd_date( dto.getEnd_date() );
         activity.setHeadcount_limit( dto.getHeadcount_limit() );
+        activity.setStart_date( dto.getStart_date() );
+        activity.setTitle( dto.getTitle() );
 
         return activity;
     }
@@ -96,13 +96,13 @@ public class ConverterImpl implements Converter {
 
         Activity activity = new Activity();
 
-        activity.setId( dto.getId() );
-        activity.setTitle( dto.getTitle() );
         activity.setAddress( dto.getAddress() );
-        activity.setStart_date( dto.getStart_date() );
-        activity.setEnd_date( dto.getEnd_date() );
         activity.setDescription( dto.getDescription() );
+        activity.setEnd_date( dto.getEnd_date() );
         activity.setHeadcount_limit( dto.getHeadcount_limit() );
+        activity.setId( dto.getId() );
+        activity.setStart_date( dto.getStart_date() );
+        activity.setTitle( dto.getTitle() );
 
         return activity;
     }
@@ -115,13 +115,13 @@ public class ConverterImpl implements Converter {
 
         PersonalVO personalVO = new PersonalVO();
 
-        personalVO.setRealName( personal.getRealName() );
-        personalVO.setEmail( personal.getEmail() );
-        personalVO.setPhone( personal.getPhone() );
         personalVO.setAge( personal.getAge() );
+        personalVO.setCurrent_address( personal.getCurrent_address() );
+        personalVO.setEmail( personal.getEmail() );
         personalVO.setGender( personal.getGender() );
         personalVO.setIdNumber( personal.getIdNumber() );
-        personalVO.setCurrent_address( personal.getCurrent_address() );
+        personalVO.setPhone( personal.getPhone() );
+        personalVO.setRealName( personal.getRealName() );
 
         return personalVO;
     }
