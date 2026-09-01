@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.volunteer_system.converter.Converter;
 import com.example.volunteer_system.exception.TokenException;
 import com.example.volunteer_system.mapper.UserMapper;
+import com.example.volunteer_system.model.entity.Activity;
 import com.example.volunteer_system.model.entity.Users;
 import com.example.volunteer_system.model.vo.UserVO;
 import com.example.volunteer_system.service.AdminService;
@@ -14,11 +15,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 @Service
 public class AdminServiceImpl extends ServiceImpl<UserMapper,Users> implements AdminService {
+    private void checkRole(){//非普通用户
+        int role = UserContext.getRole();
+        if(role!=0&&role!=1){
+            throw new TokenException("该账号权限不足");
+        }
+    }
     @Override
     public void banUser(String email){
-        if(UserContext.getRole()==2){
-            throw new TokenException("该账号没有此权限");
-        }
+        checkRole();
         this.lambdaUpdate()
                 .eq(Users::getEmail,email)
                 .set(Users::getStatus,2)
@@ -26,9 +31,7 @@ public class AdminServiceImpl extends ServiceImpl<UserMapper,Users> implements A
     }
     @Override
     public void unbanUser(String email){
-        if(UserContext.getRole()==2){
-            throw new TokenException("该账号没有此权限");
-        }
+        checkRole();
         this.lambdaUpdate()
                 .eq(Users::getEmail,email)
                 .set(Users::getStatus,1)
@@ -36,9 +39,7 @@ public class AdminServiceImpl extends ServiceImpl<UserMapper,Users> implements A
     }
     @Override
     public List<UserVO> getUser(){
-        if(UserContext.getRole()==2){
-            throw new TokenException("该账号没有此权限");
-        }
+        checkRole();
         List<Users> db_user=this.lambdaQuery()
                 .eq(Users::getRole,2)
                 .list();

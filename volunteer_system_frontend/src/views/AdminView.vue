@@ -4,8 +4,12 @@ import { banUser, changeRole, getAllUsers, getUsers, unbanUser } from '@/api/adm
 import { authState } from '@/stores/auth'
 import { ROLE, STATUS, roleLabel, statusLabel, type UserVO } from '@/types/api'
 import { useToast } from '@/composables/toast'
+import AdminActivitiesView from '@/views/AdminActivitiesView.vue'
 
 const toast = useToast()
+
+/** 管理台分区：users 用户管理 · activities 活动管理 */
+const section = ref<'users' | 'activities'>('users')
 
 const users = ref<UserVO[]>([])
 const loading = ref(true)
@@ -102,24 +106,44 @@ onMounted(load)
 
 <template>
   <div class="container">
-    <div class="admin-head animate-in">
-      <div>
-        <h1 class="admin-title">用户管理</h1>
-        <p class="muted">
-          {{ isSuperAdmin ? '管理平台内的管理员与志愿者账号。' : '查看并管理志愿者账号。' }}
-        </p>
-      </div>
-      <button class="btn btn-ghost" @click="load">刷新列表</button>
+    <div class="section-tabs animate-in">
+      <button
+        class="section-tab"
+        :class="{ 'is-active': section === 'users' }"
+        @click="section = 'users'"
+      >
+        用户管理
+      </button>
+      <button
+        class="section-tab"
+        :class="{ 'is-active': section === 'activities' }"
+        @click="section = 'activities'"
+      >
+        活动管理
+      </button>
     </div>
 
-    <div class="stats animate-in">
-      <div v-for="s in stats" :key="s.key" class="stat card">
-        <span class="stat-value" :class="`stat-${s.tone}`">{{ s.value }}</span>
-        <span class="stat-label">{{ s.label }}</span>
-      </div>
-    </div>
+    <AdminActivitiesView v-if="section === 'activities'" />
 
-    <div class="card card-pad animate-in">
+    <template v-else>
+      <div class="admin-head animate-in">
+        <div>
+          <h1 class="admin-title">用户管理</h1>
+          <p class="muted">
+            {{ isSuperAdmin ? '管理平台内的管理员与志愿者账号。' : '查看并管理志愿者账号。' }}
+          </p>
+        </div>
+        <button class="btn btn-ghost" @click="load">刷新列表</button>
+      </div>
+
+      <div class="stats animate-in">
+        <div v-for="s in stats" :key="s.key" class="stat card">
+          <span class="stat-value" :class="`stat-${s.tone}`">{{ s.value }}</span>
+          <span class="stat-label">{{ s.label }}</span>
+        </div>
+      </div>
+
+      <div class="card card-pad animate-in">
       <div class="toolbar">
         <div class="search">
           <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
@@ -230,11 +254,44 @@ onMounted(load)
           </tbody>
         </table>
       </div>
-    </div>
+      </div>
+    </template>
   </div>
 </template>
 
 <style scoped>
+.section-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.section-tab {
+  padding: 8px 20px;
+  border: 1px solid var(--c-line-strong);
+  border-radius: var(--r-pill);
+  background: var(--c-surface);
+  color: var(--c-ink-soft);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 0.16s ease,
+    color 0.16s ease,
+    background 0.16s ease;
+}
+
+.section-tab:hover {
+  border-color: var(--c-primary);
+  color: var(--c-primary-deep);
+}
+
+.section-tab.is-active {
+  border-color: var(--c-primary);
+  background: var(--c-primary);
+  color: #fff;
+}
+
 .admin-head {
   display: flex;
   align-items: flex-end;

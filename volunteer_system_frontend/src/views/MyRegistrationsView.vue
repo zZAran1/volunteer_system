@@ -4,11 +4,13 @@ import { getRegisteredActivities } from '@/api/activity'
 import { unRegistrant } from '@/api/registration'
 import { authState } from '@/stores/auth'
 import {
-  ACTIVITY_STATUS,
+  activityStatusClass,
   activityStatusLabel,
   type ActivityVO,
 } from '@/types/api'
 import { useToast } from '@/composables/toast'
+
+const statusClass = activityStatusClass
 
 const toast = useToast()
 
@@ -64,12 +66,6 @@ function formatDate(value: string): string {
 function dateRange(a: ActivityVO): string {
   if (!a.start_date || !a.end_date) return '时间待定'
   return `${formatDate(a.start_date)} — ${formatDate(a.end_date)}`
-}
-
-function statusClass(status: number): string {
-  if (status === ACTIVITY_STATUS.RECRUITING) return 'badge-green'
-  if (status === ACTIVITY_STATUS.PENDING) return 'badge-accent'
-  return 'badge-mute'
 }
 
 onMounted(load)

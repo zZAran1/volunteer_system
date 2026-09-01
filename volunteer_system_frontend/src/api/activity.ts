@@ -5,7 +5,7 @@ import type {
   UpdateActivityDTO,
 } from '@/types/api'
 
-/** 活动广场：公开可见（已审核通过）的活动列表 */
+/** 活动广场：公开可见（已审核通过，status=1）的活动列表 */
 export function viewActivities(): Promise<ActivityVO[]> {
   return get<ActivityVO[]>('/activity/viewActivity')
 }
@@ -25,6 +25,31 @@ export function getRegisteredActivities(): Promise<ActivityVO[]> {
   return get<ActivityVO[]>('/activity/getRegistered')
 }
 
+/** 管理员：待审核的活动（status=0） */
+export function getUnderReviewActivities(): Promise<ActivityVO[]> {
+  return get<ActivityVO[]>('/activity/underReviewActivity')
+}
+
+/** 管理员：进行中的活动（status=2） */
+export function getOngoingActivities(): Promise<ActivityVO[]> {
+  return get<ActivityVO[]>('/activity/ongoingActivity')
+}
+
+/** 管理员：已满员的活动（status=3） */
+export function getFullActivities(): Promise<ActivityVO[]> {
+  return get<ActivityVO[]>('/activity/fullActivity')
+}
+
+/** 管理员：已结束的活动（status=4） */
+export function getEndedActivities(): Promise<ActivityVO[]> {
+  return get<ActivityVO[]>('/activity/endedActivity')
+}
+
+/** 管理员：审核不通过的活动（status=5） */
+export function getRejectedActivities(): Promise<ActivityVO[]> {
+  return get<ActivityVO[]>('/activity/rejectedActivity')
+}
+
 /** 发布活动 */
 export function createActivity(dto: CreateActivityDTO): Promise<void> {
   return post<void>('/activity/create', dto)
@@ -36,10 +61,29 @@ export function updateActivity(dto: UpdateActivityDTO): Promise<void> {
 }
 
 /**
- * 删除活动。
- * 后端接口为 DELETE /activity/delete，使用 @RequestParam 将参数绑定到
- * UpdateActivityDTO，实际只用到了 id，因此这里通过查询串传 id。
+ * 删除自己发布的活动。
+ * 后端为 DELETE /activity/deleteMyActivity，@RequestParam 绑定 UpdateActivityDTO，
+ * 实际只用 id，通过查询串传。
  */
-export function deleteActivity(id: number): Promise<void> {
-  return del<void>('/activity/delete', { params: { id } })
+export function deleteMyActivity(id: number): Promise<void> {
+  return del<void>('/activity/deleteMyActivity', { params: { id } })
+}
+
+/**
+ * 管理员删除任意活动。
+ * 后端为 DELETE /activity/deleteActivity，@RequestParam 绑定 RegistrationDTO，
+ * 参数名为 activity_id。
+ */
+export function deleteActivityByAdmin(activityId: number): Promise<void> {
+  return del<void>('/activity/deleteActivity', { params: { activity_id: activityId } })
+}
+
+/** 审核通过活动（JSON body：{ activity_id }） */
+export function reviewApprove(activityId: number): Promise<void> {
+  return put<void>('/activity/reviewEvent_Approved', { activity_id: activityId })
+}
+
+/** 驳回活动（JSON body：{ activity_id }） */
+export function reviewReject(activityId: number): Promise<void> {
+  return put<void>('/activity/reviewEvent_Rejected', { activity_id: activityId })
 }

@@ -4,11 +4,13 @@ import { getRegisteredActivities, viewActivities } from '@/api/activity'
 import { registrant, unRegistrant } from '@/api/registration'
 import { authState } from '@/stores/auth'
 import {
-  ACTIVITY_STATUS,
+  activityStatusClass,
   activityStatusLabel,
   type ActivityVO,
 } from '@/types/api'
 import { useToast } from '@/composables/toast'
+
+const statusClass = activityStatusClass
 
 const toast = useToast()
 
@@ -110,12 +112,6 @@ function headcountText(a: ActivityVO): string {
   return a.headcount_limit
     ? `${a.headcount ?? 0} / ${a.headcount_limit}`
     : `已报名 ${a.headcount ?? 0} 人 · 不限人数`
-}
-
-function statusClass(status: number): string {
-  if (status === ACTIVITY_STATUS.RECRUITING) return 'badge-green'
-  if (status === ACTIVITY_STATUS.PENDING) return 'badge-accent'
-  return 'badge-mute'
 }
 
 onMounted(load)

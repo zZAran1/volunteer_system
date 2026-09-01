@@ -34,7 +34,7 @@
         WHERE a.poster_id = #{posterId}
         ORDER BY a.id DESC
     </select>
-    <select id="userSelectAllActivity" resultType="com.example.volunteer_system.model.vo.ActivityVO">
+    <select id="SelectActivity" resultType="com.example.volunteer_system.model.vo.ActivityVO">
         SELECT a.id,
                a.title,
                a.address,
@@ -47,7 +47,7 @@
                u.username AS poster_name
         FROM activity a
                  LEFT JOIN users u ON a.poster_id = u.id
-        WHERE a.status=1
+        WHERE a.status= #{statusId}
         ORDER BY a.id DESC
     </select>
     <select id="selectRegistered" resultType="com.example.volunteer_system.model.vo.ActivityVO">

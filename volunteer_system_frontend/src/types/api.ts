@@ -157,10 +157,14 @@ export interface RegistrationDTO {
   activity_id: number
 }
 
-/** 活动状态：0 待审核 · 1 招募中 */
+/** 活动状态：0 待审核 · 1 招募中 · 2 进行中 · 3 已满 · 4 已结束 · 5 已驳回 */
 export const ACTIVITY_STATUS = {
   PENDING: 0,
   RECRUITING: 1,
+  ONGOING: 2,
+  FULL: 3,
+  ENDED: 4,
+  REJECTED: 5,
 } as const
 
 export function activityStatusLabel(status: number): string {
@@ -169,7 +173,30 @@ export function activityStatusLabel(status: number): string {
       return '招募中'
     case ACTIVITY_STATUS.PENDING:
       return '待审核'
+    case ACTIVITY_STATUS.ONGOING:
+      return '进行中'
+    case ACTIVITY_STATUS.FULL:
+      return '已满'
+    case ACTIVITY_STATUS.ENDED:
+      return '已结束'
+    case ACTIVITY_STATUS.REJECTED:
+      return '已驳回'
     default:
       return '状态未知'
+  }
+}
+
+/** 活动状态对应的徽章样式 */
+export function activityStatusClass(status: number): string {
+  switch (status) {
+    case ACTIVITY_STATUS.RECRUITING:
+    case ACTIVITY_STATUS.ONGOING:
+      return 'badge-green'
+    case ACTIVITY_STATUS.PENDING:
+      return 'badge-accent'
+    case ACTIVITY_STATUS.REJECTED:
+      return 'badge-danger'
+    default:
+      return 'badge-mute'
   }
 }

@@ -5,6 +5,7 @@ import com.example.volunteer_system.converter.Converter;
 import com.example.volunteer_system.exception.TokenException;
 import com.example.volunteer_system.mapper.ActivityMapper;
 import com.example.volunteer_system.model.dto.CreateActivityDTO;
+import com.example.volunteer_system.model.dto.RegistrationDTO;
 import com.example.volunteer_system.model.dto.UpdateActivityDTO;
 import com.example.volunteer_system.model.entity.Activity;
 import com.example.volunteer_system.model.vo.ActivityVO;
@@ -18,7 +19,12 @@ import java.util.List;
 
 @Service
 public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> implements ActivityService {
-
+    private void checkRole(){
+        int role = UserContext.getRole();
+        if(role!=0&&role!=1){
+            throw new TokenException("该账号权限不足");
+        }
+    }
     @Override
     public void createActivity(CreateActivityDTO dto) {
         int userId = UserContext.getUserId();
@@ -34,22 +40,16 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         int userId = UserContext.getUserId();
         Activity activity = Converter.INSTANCE.toActivity(dto);
         Integer id = activity.getId();
-        activity.setId(null);
         this.lambdaUpdate()
                 .eq(Activity::getId, id)
                 .eq(Activity::getPoster_id, userId)   // 只能修改自己发布的活动
+                .set(Activity::getStatus,0)
                 .update(activity);
     }
     @Override
     public List<ActivityVO> getAllActivities() {
-        if(UserContext.getRole()!=0&&UserContext.getUserId()!=1){
-            throw new TokenException("该账号没权限进行该操作");
-        }
+        checkRole();
         return this.baseMapper.adminSelectAllActivity();
-    }
-    @Override
-    public List<ActivityVO> viewActivities(){
-        return this.baseMapper.userSelectAllActivity();
     }
     @Override
     public List<ActivityVO> getMyActivities() {
@@ -62,11 +62,63 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         return this.baseMapper.selectRegistered(userId);
     }
     @Override
-    public void deleteActivity(UpdateActivityDTO dto) {
+    public List<ActivityVO> underReviewActivity(){
+        checkRole();
+        return this.baseMapper.SelectActivity(0);
+    }
+    @Override
+    public List<ActivityVO> viewActivities(){
+        return this.baseMapper.SelectActivity(1);
+    }
+    @Override
+    public List<ActivityVO> ongoingActivity(){
+        checkRole();
+        return this.baseMapper.SelectActivity(2);
+    }
+    @Override
+    public List<ActivityVO> fullActivity(){
+        checkRole();
+        return this.baseMapper.SelectActivity(3);
+    }
+    @Override
+    public List<ActivityVO> endedActivity(){
+        checkRole();
+        return this.baseMapper.SelectActivity(4);
+    }
+    @Override
+    public List<ActivityVO> rejectedActivity(){
+        checkRole();
+        return this.baseMapper.SelectActivity(5);
+    }
+    @Override
+    public void deleteMyActivity(UpdateActivityDTO dto) {
         int userId = UserContext.getUserId();
         this.lambdaUpdate()
                 .eq(Activity::getId, dto.getId())
                 .eq(Activity::getPoster_id, userId)// 只能删除自己发布的活动
                 .remove();
+    }
+    @Override
+    public void deleteActivity(RegistrationDTO dto){
+        checkRole();
+        this.lambdaUpdate()
+                .eq(Activity::getId,dto.getActivity_id())
+                .remove();
+    }
+    @Override
+    public void reviewEvent_Approved(int activityId){
+        checkRole();
+        this.lambdaUpdate()
+                .eq(Activity::getId,activityId)
+                .set(Activity::getStatus,1)
+                .update();
+    }
+    @Override
+    public void reviewEvent_Rejected(int activityId){
+        checkRole();
+        this.lambdaUpdate()
+                .eq(Activity::getId,activityId)
+                .set(Activity::getStatus,5)
+                .update();
     }
 }

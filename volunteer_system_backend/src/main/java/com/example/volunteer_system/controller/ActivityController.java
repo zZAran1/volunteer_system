@@ -1,6 +1,7 @@
 package com.example.volunteer_system.controller;
 
 import com.example.volunteer_system.model.dto.CreateActivityDTO;
+import com.example.volunteer_system.model.dto.RegistrationDTO;
 import com.example.volunteer_system.model.dto.UpdateActivityDTO;
 import com.example.volunteer_system.model.vo.ActivityVO;
 import com.example.volunteer_system.result.Result;
@@ -33,11 +34,6 @@ public class ActivityController {
         List<ActivityVO> list=activityService.getAllActivities();
         return Result.success(list);
     }
-    @GetMapping("/viewActivity")//用户看到的所有活动（已审核）
-    public Result<List<ActivityVO>> viewActivities() {
-        List<ActivityVO> list=activityService.viewActivities();
-        return Result.success(list);
-    }
     @GetMapping("/getMyActivity")//用户发布的活动
     public Result<List<ActivityVO>> getMyActivity() {
         List<ActivityVO> list=activityService.getMyActivities();
@@ -48,9 +44,54 @@ public class ActivityController {
         List<ActivityVO> list=activityService.getRegistered();
         return Result.success(list);
     }
-    @DeleteMapping("/delete")
-    public Result<Void> deleteActivity(@RequestParam UpdateActivityDTO dto) {
+    @GetMapping("/underReviewActivity")//管理员看到的待审核中的活动
+    public Result<List<ActivityVO>> getUnderReviewActivity() {
+        List<ActivityVO> list=activityService.underReviewActivity();
+        return Result.success(list);
+    }
+    @GetMapping("/viewActivity")//用户看到的所有活动（已审核）
+    public Result<List<ActivityVO>> viewActivities() {
+        List<ActivityVO> list=activityService.viewActivities();
+        return Result.success(list);
+    }
+    @GetMapping("/ongoingActivity")//管理员看到的进行中的活动
+    public Result<List<ActivityVO>> getOngoingActivity() {
+        List<ActivityVO> list=activityService.ongoingActivity();
+        return Result.success(list);
+    }
+    @GetMapping("/fullActivity")//管理员看到的已满人的活动
+    public Result<List<ActivityVO>> getFullActivity() {
+        List<ActivityVO> list=activityService.fullActivity();
+        return Result.success(list);
+    }
+    @GetMapping("/endedActivity")//管理员看到的已结束的活动
+    public Result<List<ActivityVO>> getEndedActivity() {
+        List<ActivityVO> list=activityService.endedActivity();
+        return Result.success(list);
+    }
+    @GetMapping("/rejectedActivity")//管理员看到的审核不通过的活动
+    public Result<List<ActivityVO>> getRejectedActivity() {
+        List<ActivityVO> list=activityService.rejectedActivity();
+        return Result.success(list);
+    }
+    @DeleteMapping("/deleteMyActivity")
+    public Result<Void> deleteMyActivity(@RequestParam UpdateActivityDTO dto) {
+        activityService.deleteMyActivity(dto);
+        return Result.success("删除该活动成功");
+    }
+    @DeleteMapping("/deleteActivity")
+    public Result<Void> deleteActivity(@RequestParam RegistrationDTO dto) {
         activityService.deleteActivity(dto);
         return Result.success("删除该活动成功");
+    }
+    @PutMapping("/reviewEvent_Approved")
+    public Result<Void> reviewEventApproved(@Validated @RequestBody RegistrationDTO dto) {
+        activityService.reviewEvent_Approved(dto.getActivity_id());
+        return Result.success("审核成功");
+    }
+    @PutMapping("/reviewEvent_Rejected")
+    public Result<Void> reviewEventRejected(@Validated @RequestBody RegistrationDTO dto) {
+        activityService.reviewEvent_Rejected(dto.getActivity_id());
+        return Result.success("审核成功");
     }
 }

@@ -2,16 +2,18 @@
 import { onMounted, reactive, ref } from 'vue'
 import {
   createActivity,
-  deleteActivity,
+  deleteMyActivity,
   getMyActivities,
   updateActivity,
 } from '@/api/activity'
 import {
-  ACTIVITY_STATUS,
+  activityStatusClass,
   activityStatusLabel,
   type ActivityVO,
 } from '@/types/api'
 import { useToast } from '@/composables/toast'
+
+const statusClass = activityStatusClass
 
 const toast = useToast()
 
@@ -118,7 +120,7 @@ async function onDelete(a: ActivityVO) {
   if (!window.confirm(`确定要删除活动「${a.title}」吗？该操作不可撤销。`)) return
   busyId.value = a.id
   try {
-    await deleteActivity(a.id)
+    await deleteMyActivity(a.id)
     toast.success('活动已删除')
     if (editingId.value === a.id) resetForm()
     await load()
@@ -138,12 +140,6 @@ function formatDate(value: string): string {
 function dateRange(a: ActivityVO): string {
   if (!a.start_date || !a.end_date) return '时间待定'
   return `${formatDate(a.start_date)} — ${formatDate(a.end_date)}`
-}
-
-function statusClass(status: number): string {
-  if (status === ACTIVITY_STATUS.RECRUITING) return 'badge-green'
-  if (status === ACTIVITY_STATUS.PENDING) return 'badge-accent'
-  return 'badge-mute'
 }
 
 onMounted(load)

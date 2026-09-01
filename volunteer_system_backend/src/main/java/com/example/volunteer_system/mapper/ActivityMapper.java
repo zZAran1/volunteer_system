@@ -11,8 +11,8 @@ import java.util.List;
 @Mapper
 public interface ActivityMapper extends BaseMapper<Activity> {
     List<ActivityVO> adminSelectAllActivity();
-    List<ActivityVO> userSelectAllActivity();
+    List<ActivityVO> SelectActivity(@Param("statusId") Integer statusId);
     List<ActivityVO> selectMyActivity(@Param("posterId") Integer posterId);
     List<ActivityVO> selectRegistered(@Param("MyId") Integer Id);
-    Integer selectHeadCount(@Param("ActivityId") Integer ActivityId);
+
 }

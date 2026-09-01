@@ -12,4 +12,5 @@ public interface AdminService extends IService<Users> {
     List<UserVO> getUser();
     List<UserVO> getAllUser();
     void changeRole(String email,int value);
+
 }
