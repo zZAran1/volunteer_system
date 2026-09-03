@@ -1,10 +1,12 @@
 com\example\volunteer_system\model\dto\UpdateActivityDTO.class
+com\example\volunteer_system\controller\RegistrationController.class
 com\example\volunteer_system\exception\ProfileException.class
 com\example\volunteer_system\util\JwtUtil.class
 com\example\volunteer_system\service\UserService.class
 com\example\volunteer_system\service\impl\PersonalServiceImpl.class
 com\example\volunteer_system\exception\BaseBusinessException.class
 com\example\volunteer_system\model\dto\ChangeRoleDTO.class
+com\example\volunteer_system\config\RedisConfig.class
 com\example\volunteer_system\exception\LoginException.class
 com\example\volunteer_system\VolunteerSystemApplication.class
 com\example\volunteer_system\model\entity\Registration.class
@@ -43,6 +45,7 @@ com\example\volunteer_system\model\dto\LoginDTO.class
 com\example\volunteer_system\interceptor\AuthInterceptor.class
 com\example\volunteer_system\model\vo\ActivityVO.class
 com\example\volunteer_system\service\RegistrationService.class
+com\example\volunteer_system\exception\RegistrationException.class
 com\example\volunteer_system\util\UserContext.class
 com\example\volunteer_system\service\ActivityService.class
 com\example\volunteer_system\converter\ConverterImpl.class

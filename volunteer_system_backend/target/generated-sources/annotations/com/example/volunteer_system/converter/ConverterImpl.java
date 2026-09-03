@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-09-02T01:44:44+0800",
-    comments = "version: 1.6.3, compiler: Eclipse JDT (IDE) 3.46.100.v20260624-0231, environment: Java 21.0.11 (Eclipse Adoptium)"
+    date = "2026-09-04T01:08:49+0800",
+    comments = "version: 1.6.3, compiler: javac, environment: Java 21.0.10 (Eclipse Adoptium)"
 )
 @Component
 public class ConverterImpl implements Converter {
@@ -28,9 +28,9 @@ public class ConverterImpl implements Converter {
 
         Users users = new Users();
 
-        users.setEmail( dto.getEmail() );
-        users.setPassword( dto.getPassword() );
         users.setUsername( dto.getUsername() );
+        users.setPassword( dto.getPassword() );
+        users.setEmail( dto.getEmail() );
 
         return users;
     }
@@ -43,11 +43,11 @@ public class ConverterImpl implements Converter {
 
         ProfileVO profileVO = new ProfileVO();
 
-        profileVO.setCreated_at( user.getCreated_at() );
-        profileVO.setEmail( user.getEmail() );
-        profileVO.setImage_url( user.getImage_url() );
-        profileVO.setRole( user.getRole() );
         profileVO.setUsername( user.getUsername() );
+        profileVO.setEmail( user.getEmail() );
+        profileVO.setCreated_at( user.getCreated_at() );
+        profileVO.setRole( user.getRole() );
+        profileVO.setImage_url( user.getImage_url() );
 
         return profileVO;
     }
@@ -60,12 +60,12 @@ public class ConverterImpl implements Converter {
 
         UserVO userVO = new UserVO();
 
-        userVO.setCreated_at( users.getCreated_at() );
-        userVO.setEmail( users.getEmail() );
         userVO.setId( users.getId() );
+        userVO.setUsername( users.getUsername() );
+        userVO.setEmail( users.getEmail() );
+        userVO.setCreated_at( users.getCreated_at() );
         userVO.setRole( users.getRole() );
         userVO.setStatus( users.getStatus() );
-        userVO.setUsername( users.getUsername() );
 
         return userVO;
     }
@@ -78,12 +78,12 @@ public class ConverterImpl implements Converter {
 
         Activity activity = new Activity();
 
-        activity.setAddress( dto.getAddress() );
-        activity.setDescription( dto.getDescription() );
-        activity.setEnd_date( dto.getEnd_date() );
-        activity.setHeadcount_limit( dto.getHeadcount_limit() );
-        activity.setStart_date( dto.getStart_date() );
         activity.setTitle( dto.getTitle() );
+        activity.setAddress( dto.getAddress() );
+        activity.setStart_date( dto.getStart_date() );
+        activity.setEnd_date( dto.getEnd_date() );
+        activity.setDescription( dto.getDescription() );
+        activity.setHeadcount_limit( dto.getHeadcount_limit() );
 
         return activity;
     }
@@ -96,13 +96,13 @@ public class ConverterImpl implements Converter {
 
         Activity activity = new Activity();
 
-        activity.setAddress( dto.getAddress() );
-        activity.setDescription( dto.getDescription() );
-        activity.setEnd_date( dto.getEnd_date() );
-        activity.setHeadcount_limit( dto.getHeadcount_limit() );
         activity.setId( dto.getId() );
-        activity.setStart_date( dto.getStart_date() );
         activity.setTitle( dto.getTitle() );
+        activity.setAddress( dto.getAddress() );
+        activity.setStart_date( dto.getStart_date() );
+        activity.setEnd_date( dto.getEnd_date() );
+        activity.setDescription( dto.getDescription() );
+        activity.setHeadcount_limit( dto.getHeadcount_limit() );
 
         return activity;
     }
@@ -115,13 +115,13 @@ public class ConverterImpl implements Converter {
 
         PersonalVO personalVO = new PersonalVO();
 
-        personalVO.setAge( personal.getAge() );
-        personalVO.setCurrent_address( personal.getCurrent_address() );
+        personalVO.setRealName( personal.getRealName() );
         personalVO.setEmail( personal.getEmail() );
+        personalVO.setPhone( personal.getPhone() );
+        personalVO.setAge( personal.getAge() );
         personalVO.setGender( personal.getGender() );
         personalVO.setIdNumber( personal.getIdNumber() );
-        personalVO.setPhone( personal.getPhone() );
-        personalVO.setRealName( personal.getRealName() );
+        personalVO.setCurrent_address( personal.getCurrent_address() );
 
         return personalVO;
     }

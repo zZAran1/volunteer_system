@@ -1,7 +1,9 @@
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\result\Result.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\mapper\RegistrationMapper.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\util\JwtUtil.java
+D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\controller\RegistrationController.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\controller\ActivityController.java
+D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\config\RedisConfig.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\controller\UserController.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\mapper\ActivityMapper.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\service\CaptchaService.java
@@ -13,6 +15,7 @@ D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volun
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\util\UserContext.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\mapper\PersonalMapper.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\model\dto\ChangeRoleDTO.java
+D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\exception\RegistrationException.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\mapper\UserMapper.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\model\dto\RegisterDTO.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\VolunteerSystemApplication.java
