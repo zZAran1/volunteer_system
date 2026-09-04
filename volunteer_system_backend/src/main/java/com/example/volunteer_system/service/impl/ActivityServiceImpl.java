@@ -13,6 +13,7 @@ import com.example.volunteer_system.service.ActivityService;
 import com.example.volunteer_system.util.UserContext;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -49,45 +50,63 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     @Override
     public List<ActivityVO> getAllActivities() {
         checkRole();
+        this.baseMapper.refreshEnded();
+        this.baseMapper.refreshOngoing();
         return this.baseMapper.adminSelectAllActivity();
     }
     @Override
     public List<ActivityVO> getMyActivities() {
         int userId = UserContext.getUserId();
+        this.baseMapper.refreshEnded();
+        this.baseMapper.refreshOngoing();
         return this.baseMapper.selectMyActivity(userId);
     }
     @Override
     public List<ActivityVO> getRegistered(){
         int userId = UserContext.getUserId();
+        this.baseMapper.refreshEnded();
+        this.baseMapper.refreshOngoing();
         return this.baseMapper.selectRegistered(userId);
     }
     @Override
     public List<ActivityVO> underReviewActivity(){
         checkRole();
+        this.baseMapper.refreshEnded();
+        this.baseMapper.refreshOngoing();
         return this.baseMapper.SelectActivity(0);
     }
     @Override
     public List<ActivityVO> viewActivities(){
+        this.baseMapper.refreshEnded();
+        this.baseMapper.refreshOngoing();
         return this.baseMapper.SelectActivity(1);
     }
     @Override
     public List<ActivityVO> ongoingActivity(){
         checkRole();
+        this.baseMapper.refreshEnded();
+        this.baseMapper.refreshOngoing();
         return this.baseMapper.SelectActivity(2);
     }
     @Override
     public List<ActivityVO> fullActivity(){
         checkRole();
+        this.baseMapper.refreshEnded();
+        this.baseMapper.refreshOngoing();
         return this.baseMapper.SelectActivity(3);
     }
     @Override
     public List<ActivityVO> endedActivity(){
         checkRole();
+        this.baseMapper.refreshEnded();
+        this.baseMapper.refreshOngoing();
         return this.baseMapper.SelectActivity(4);
     }
     @Override
     public List<ActivityVO> rejectedActivity(){
         checkRole();
+        this.baseMapper.refreshEnded();
+        this.baseMapper.refreshOngoing();
         return this.baseMapper.SelectActivity(5);
     }
     @Override

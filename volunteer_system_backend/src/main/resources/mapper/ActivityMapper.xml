@@ -67,4 +67,17 @@
         WHERE r.registrant_id=#{MyId}
         ORDER BY a.start_date ASC
     </select>
+    <update id="refreshEnded">
+        UPDATE activity
+        SET status = 4
+        WHERE status IN (1, 2, 3)
+          AND end_date &lt; CURDATE()
+    </update>
+    <update id="refreshOngoing">
+        UPDATE activity
+        SET status = 2
+        WHERE status = 1
+          AND start_date &lt;= CURDATE()
+          AND end_date &gt;= CURDATE()
+    </update>
 </mapper>

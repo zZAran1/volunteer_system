@@ -14,5 +14,7 @@ public interface ActivityMapper extends BaseMapper<Activity> {
     List<ActivityVO> SelectActivity(@Param("statusId") Integer statusId);
     List<ActivityVO> selectMyActivity(@Param("posterId") Integer posterId);
     List<ActivityVO> selectRegistered(@Param("MyId") Integer Id);
+    void refreshEnded();
+    void refreshOngoing();
 
 }
