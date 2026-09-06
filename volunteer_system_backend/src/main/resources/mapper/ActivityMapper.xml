@@ -80,4 +80,8 @@
           AND start_date &lt;= CURDATE()
           AND end_date &gt;= CURDATE()
     </update>
+    <insert id="insertIfNotExist" parameterType="Registration">
+        INSERT IGNORE INTO registration (activity_id, registrant_id)
+    VALUES (#{activityId}, #{userId}, NOW())
+    </insert>
 </mapper>

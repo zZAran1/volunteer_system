@@ -26,6 +26,12 @@ public class RegistrationServiceImpl extends ServiceImpl<RegistrationMapper, Reg
         if(activity!=null && activity.getHeadcount_limit() != null && activity.getHeadcount() >= activity.getHeadcount_limit()){
             throw new RegistrationException("该活动报名人数已满");
         }
+        if(this.lambdaQuery()
+                .eq(Registration::getRegistrant_id, user_id)
+                .eq(Registration::getActivity_id, dto.getActivity_id())
+                .exists()){
+            throw new RegistrationException("你已报名");
+        }
         registration.setRegistrant_id(user_id);
         registration.setActivity_id(dto.getActivity_id());
         this.save(registration);

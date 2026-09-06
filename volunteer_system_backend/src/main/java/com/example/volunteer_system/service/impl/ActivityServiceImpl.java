@@ -26,6 +26,10 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
             throw new TokenException("该账号权限不足");
         }
     }
+    private void updateTime(){
+        this.baseMapper.refreshEnded();
+        this.baseMapper.refreshOngoing();
+    }
     @Override
     public void createActivity(CreateActivityDTO dto) {
         int userId = UserContext.getUserId();
@@ -50,63 +54,54 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     @Override
     public List<ActivityVO> getAllActivities() {
         checkRole();
-        this.baseMapper.refreshEnded();
-        this.baseMapper.refreshOngoing();
+        updateTime();
         return this.baseMapper.adminSelectAllActivity();
     }
     @Override
     public List<ActivityVO> getMyActivities() {
         int userId = UserContext.getUserId();
-        this.baseMapper.refreshEnded();
-        this.baseMapper.refreshOngoing();
+        updateTime();
         return this.baseMapper.selectMyActivity(userId);
     }
     @Override
     public List<ActivityVO> getRegistered(){
         int userId = UserContext.getUserId();
-        this.baseMapper.refreshEnded();
-        this.baseMapper.refreshOngoing();
+        updateTime();
         return this.baseMapper.selectRegistered(userId);
     }
     @Override
     public List<ActivityVO> underReviewActivity(){
         checkRole();
-        this.baseMapper.refreshEnded();
-        this.baseMapper.refreshOngoing();
+        updateTime();
         return this.baseMapper.SelectActivity(0);
     }
     @Override
     public List<ActivityVO> viewActivities(){
-        this.baseMapper.refreshEnded();
-        this.baseMapper.refreshOngoing();
+        updateTime();
         return this.baseMapper.SelectActivity(1);
     }
     @Override
     public List<ActivityVO> ongoingActivity(){
         checkRole();
-        this.baseMapper.refreshEnded();
-        this.baseMapper.refreshOngoing();
+        updateTime();
         return this.baseMapper.SelectActivity(2);
     }
     @Override
     public List<ActivityVO> fullActivity(){
         checkRole();
-        this.baseMapper.refreshEnded();
-        this.baseMapper.refreshOngoing();
+        updateTime();
         return this.baseMapper.SelectActivity(3);
     }
     @Override
     public List<ActivityVO> endedActivity(){
         checkRole();
-        this.baseMapper.refreshEnded();
-        this.baseMapper.refreshOngoing();
+        updateTime();
         return this.baseMapper.SelectActivity(4);
     }
     @Override
     public List<ActivityVO> rejectedActivity(){
         checkRole();
-        this.baseMapper.refreshEnded();
-        this.baseMapper.refreshOngoing();
+        updateTime();
         return this.baseMapper.SelectActivity(5);
     }
     @Override
