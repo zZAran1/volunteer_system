@@ -7,5 +7,5 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface RegistrationMapper extends BaseMapper<Registration> {
-    int insertRegistration(@Param("activityId") Integer activityId, @Param("registrantId") Integer registrantId);
+    boolean insertRegistration(@Param("activityId") Integer activityId, @Param("registrantId") Integer registrantId);
 }

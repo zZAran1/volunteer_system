@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.volunteer_system.converter.Converter;
 import com.example.volunteer_system.exception.TokenException;
 import com.example.volunteer_system.mapper.UserMapper;
-import com.example.volunteer_system.model.entity.Activity;
 import com.example.volunteer_system.model.entity.Users;
 import com.example.volunteer_system.model.vo.UserVO;
 import com.example.volunteer_system.service.AdminService;

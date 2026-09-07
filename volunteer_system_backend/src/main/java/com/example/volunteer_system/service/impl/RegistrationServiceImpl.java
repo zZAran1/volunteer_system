@@ -21,37 +21,37 @@ public class RegistrationServiceImpl extends ServiceImpl<RegistrationMapper, Reg
     @Transactional
     public void registrant(RegistrationDTO dto){
         int user_id =UserContext.getUserId();
-        Registration registration = new Registration();
-        Activity activity = activityService.getById(dto.getActivity_id());
-        if(activity!=null && activity.getHeadcount_limit() != null && activity.getHeadcount() >= activity.getHeadcount_limit()){
+        if (!this.baseMapper.insertRegistration(dto.getActivity_id(),user_id)) {
+            throw new RegistrationException("请勿重复报名");
+        }
+        boolean updated = activityService.lambdaUpdate()
+                .eq(Activity::getId, dto.getActivity_id())
+                .apply("headcount < headcount_limit")
+                .setSql("headcount = headcount + 1")
+                .update();
+        if (!updated) {
             throw new RegistrationException("该活动报名人数已满");
         }
-        if(this.lambdaQuery()
-                .eq(Registration::getRegistrant_id, user_id)
-                .eq(Registration::getActivity_id, dto.getActivity_id())
-                .exists()){
-            throw new RegistrationException("你已报名");
-        }
-        registration.setRegistrant_id(user_id);
-        registration.setActivity_id(dto.getActivity_id());
-        this.save(registration);
-        activityService.lambdaUpdate()
-                .eq(Activity::getId, dto.getActivity_id())
-                .setSql("headcount=headcount + 1")
-                .update();
     }
     @Override
     @Transactional
     public void unRegistrant(RegistrationDTO dto){
         int user_id =UserContext.getUserId();
-        this.lambdaUpdate()
+        boolean deleted =this.lambdaUpdate()
                 .eq(Registration::getRegistrant_id, user_id)
                 .eq(Registration::getActivity_id, dto.getActivity_id())
                 .remove();
-        activityService.lambdaUpdate()
-                .eq(Activity::getId, dto.getActivity_id())
-                .gt(Activity::getHeadcount, 0)
-                .setSql("headcount=headcount - 1")
-                .update();
+        if(deleted){
+            boolean update=activityService.lambdaUpdate()
+                    .eq(Activity::getId, dto.getActivity_id())
+                    .gt(Activity::getHeadcount, 0)
+                    .setSql("headcount=headcount - 1")
+                    .update();
+            if(!update){
+                throw new RegistrationException("系统异常，取消失败");
+            }
+        }else{
+            throw new RegistrationException("您未报名该活动或已取消报名");
+        }
     }
 }
