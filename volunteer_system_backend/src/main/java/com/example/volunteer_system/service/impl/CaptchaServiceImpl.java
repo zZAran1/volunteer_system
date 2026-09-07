@@ -16,11 +16,11 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class CaptchaServiceImpl implements CaptchaService {
     private static final String CAPTCHA_KEY_PREFIX = "captcha:";
     private static final int CAPTCHA_TTL_SECONDS = 300; // 5分钟
-    private final StringRedisTemplate redisTemplate;
+    @Autowired
+    private  StringRedisTemplate redisTemplate;
     @Override
     public CaptchaVO generateCaptcha(){
         // 1. 生成图片（Hutool）

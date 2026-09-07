@@ -10,13 +10,14 @@ import com.example.volunteer_system.service.ActivityService;
 import com.example.volunteer_system.service.RegistrationService;
 import com.example.volunteer_system.util.UserContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 public class RegistrationServiceImpl extends ServiceImpl<RegistrationMapper, Registration> implements RegistrationService {
-    private final ActivityService activityService;
+    @Autowired
+    private  ActivityService activityService;
     @Override
     @Transactional
     public void registrant(RegistrationDTO dto){

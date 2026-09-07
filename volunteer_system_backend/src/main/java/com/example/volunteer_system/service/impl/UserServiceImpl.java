@@ -19,6 +19,7 @@ import com.example.volunteer_system.util.BCryptPasswordUtil;
 import com.example.volunteer_system.util.JwtUtil;
 import com.example.volunteer_system.util.UserContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,10 +30,11 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
-@RequiredArgsConstructor
+
 public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements UserService  {
     private final BCryptPasswordUtil bCryptPasswordUtil = new BCryptPasswordUtil();
-    private final JwtUtil jwtUtil;
+    @Autowired
+    private  JwtUtil jwtUtil;
     @Value("${file.upload.path}")
     private String uploadPath;
     @Override

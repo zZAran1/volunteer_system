@@ -18,13 +18,13 @@ import java.util.List;
 public class AdminController {
     private final AdminService adminService;
     @PutMapping("/banUser")
-    public Result<Void> banUser(@Valid @RequestBody String email) {
-        adminService.banUser(email);
+    public Result<Void> banUser(@Valid @RequestBody String username) {
+        adminService.banUser(username);
         return Result.success("禁用用户成功");
     }
     @PutMapping("/unbanUser")
-    public Result<Void> unbanUser(@Valid @RequestBody String email) {
-        adminService.unbanUser(email);
+    public Result<Void> unbanUser(@Valid @RequestBody String username) {
+        adminService.unbanUser(username);
         return Result.success("解封用户成功");
     }
     @GetMapping("/getUser")
@@ -39,7 +39,7 @@ public class AdminController {
     }
     @PostMapping("/changeRole")
     public Result<Void> changeRole(@Valid @RequestBody ChangeRoleDTO dto){
-        adminService.changeRole(dto.getEmail(),dto.getValue());
+        adminService.changeRole(dto.getUsername(),dto.getValue());
         return Result.success("修改权限成功");
     }
 }

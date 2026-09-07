@@ -7,10 +7,10 @@ import com.example.volunteer_system.model.vo.UserVO;
 import java.util.List;
 
 public interface AdminService extends IService<Users> {
-    void banUser(String email);
-    void unbanUser(String email);
+    void banUser(String username);
+    void unbanUser(String username);
     List<UserVO> getUser();
     List<UserVO> getAllUser();
-    void changeRole(String email,int value);
+    void changeRole(String username,int value);
 
 }

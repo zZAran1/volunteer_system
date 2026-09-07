@@ -8,33 +8,59 @@ import com.example.volunteer_system.model.entity.Users;
 import com.example.volunteer_system.model.vo.UserVO;
 import com.example.volunteer_system.service.AdminService;
 import com.example.volunteer_system.util.UserContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.stream.Collectors;
 @Service
 public class AdminServiceImpl extends ServiceImpl<UserMapper,Users> implements AdminService {
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
     private void checkRole(){//非普通用户
         int role = UserContext.getRole();
         if(role!=0&&role!=1){
             throw new TokenException("该账号权限不足");
         }
     }
-    @Override
-    public void banUser(String email){
-        checkRole();
-        this.lambdaUpdate()
-                .eq(Users::getEmail,email)
-                .set(Users::getStatus,2)
-                .update();
+    private void checkUsername(String username){
+        Users users = this.lambdaQuery()
+                .eq(Users::getUsername,username)
+                .select(Users::getRole)
+                .one();
+        if(users.getRole()==0){
+            throw new TokenException("没有权限操作该账号");
+        }
     }
     @Override
-    public void unbanUser(String email){
+    public void banUser(String username){
         checkRole();
+        checkUsername(username);
         this.lambdaUpdate()
-                .eq(Users::getEmail,email)
+                .eq(Users::getUsername,username)
+                .set(Users::getStatus,2)
+                .update();
+        Users target =this.lambdaQuery().eq(Users::getUsername,username).one();
+        if(target!=null){
+            stringRedisTemplate.opsForValue()
+                    .set("user:ban:" + target.getId(), "1", Duration.ofDays(7));
+        }
+    }
+    @Override
+    public void unbanUser(String username){
+        checkRole();
+        checkUsername(username);
+        this.lambdaUpdate()
+                .eq(Users::getUsername,username)
                 .set(Users::getStatus,1)
                 .update();
+        Users target =this.lambdaQuery().eq(Users::getUsername,username).one();
+        if(target!=null){
+            stringRedisTemplate.delete("user:ban:" + target.getId());
+        }
     }
     @Override
     public List<UserVO> getUser(){
@@ -61,16 +87,29 @@ public class AdminServiceImpl extends ServiceImpl<UserMapper,Users> implements A
                 .collect(Collectors.toList());
     }
     @Override
-    public void changeRole(String email,int value){
-        if(UserContext.getRole()!=0){
-            throw new TokenException("该账号没有权限");
+    public void changeRole(String username,int value){
+        checkUsername(username);
+        int role = UserContext.getRole();
+        if(role!=0){
+            throw new TokenException("该账号权限不足");
         }
-        if(value!=1 && value!=2){
-            throw new TokenException("修改的权限无效");
+        if(value!=1&&value!=2){
+            throw new TokenException("修改权限异常，请重试");
         }
-        this.lambdaUpdate()
-                .eq(Users::getEmail,email)
-                .set(Users::getRole,value)
-                .update();
+        switch(value){
+            case 1:
+                this.lambdaUpdate()
+                        .eq(Users::getUsername,username)
+                        .set(Users::getRole,1)
+                        .update();
+                break;
+            case 2:
+                this.lambdaUpdate()
+                        .eq(Users::getUsername,username)
+                        .set(Users::getRole,2)
+                        .update();
+                break;
+        }
     }
+
 }
