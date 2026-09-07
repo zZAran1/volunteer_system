@@ -35,7 +35,6 @@ public class CaptchaServiceImpl implements CaptchaService {
 
         // 3. 组装返回 VO
         CaptchaVO vo = new CaptchaVO();
-        vo.setCaptchaId(captchaId);
         vo.setImageBase64("data:image/png;base64," + imageBase64);
         return vo;
     }

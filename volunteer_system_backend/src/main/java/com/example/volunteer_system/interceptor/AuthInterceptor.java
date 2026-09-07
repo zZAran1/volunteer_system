@@ -1,6 +1,8 @@
 package com.example.volunteer_system.interceptor;
 
 import com.example.volunteer_system.exception.TokenException;
+import com.example.volunteer_system.model.entity.Users;
+import com.example.volunteer_system.service.UserService;
 import com.example.volunteer_system.util.JwtUtil;
 import com.example.volunteer_system.util.UserContext;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,6 +18,9 @@ public class AuthInterceptor implements HandlerInterceptor {
     private JwtUtil jwtUtil;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private UserService userService;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         if("OPTIONS".equalsIgnoreCase(request.getMethod())){
@@ -34,6 +39,16 @@ public class AuthInterceptor implements HandlerInterceptor {
         int user_id= Integer.parseInt(jwtUtil.getUserId(token));
         if(Boolean.TRUE.equals(stringRedisTemplate.hasKey("user:ban:"+user_id))) {
             throw new TokenException("该账号已被封禁，请联系管理员");
+        }
+        Users users =userService.lambdaQuery()
+                .eq(Users::getId, user_id)
+                .select(Users::getStatus)
+                .one();
+        if(users.getStatus()!=1){
+            throw new TokenException("该账号已被封禁，请联系联系管理员");
+        }
+        if(!Boolean.TRUE.equals(stringRedisTemplate.hasKey("session:"+user_id))) {
+            throw new TokenException("登录已失效，请重新登录");
         }
         UserContext.setUserId(user_id);
         int role= Integer.parseInt(jwtUtil.getRole(token));

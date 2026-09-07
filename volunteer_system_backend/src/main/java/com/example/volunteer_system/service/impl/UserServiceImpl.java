@@ -18,14 +18,15 @@ import com.example.volunteer_system.service.UserService;
 import com.example.volunteer_system.util.BCryptPasswordUtil;
 import com.example.volunteer_system.util.JwtUtil;
 import com.example.volunteer_system.util.UserContext;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -35,6 +36,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     private final BCryptPasswordUtil bCryptPasswordUtil = new BCryptPasswordUtil();
     @Autowired
     private  JwtUtil jwtUtil;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
     @Value("${file.upload.path}")
     private String uploadPath;
     @Override
@@ -61,6 +64,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
             if(db_user.getStatus()==null||db_user.getStatus()!=1){
                 throw new LoginException("该账号已被封禁");
             }
+            stringRedisTemplate.opsForValue()//生成token前在redis中登记会话
+                    .set("session:"+db_user.getId(),"1", Duration.ofDays(7));
             return jwtUtil.generateToken(String.valueOf(db_user.getId()),String.valueOf(db_user.getRole()));
         }else{
             throw new LoginException("邮箱或密码错误");

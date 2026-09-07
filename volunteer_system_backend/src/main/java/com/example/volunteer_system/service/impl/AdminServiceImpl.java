@@ -11,6 +11,7 @@ import com.example.volunteer_system.util.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.List;
@@ -36,6 +37,7 @@ public class AdminServiceImpl extends ServiceImpl<UserMapper,Users> implements A
         }
     }
     @Override
+    @Transactional
     public void banUser(String username){
         checkRole();
         checkUsername(username);
@@ -47,9 +49,11 @@ public class AdminServiceImpl extends ServiceImpl<UserMapper,Users> implements A
         if(target!=null){
             stringRedisTemplate.opsForValue()
                     .set("user:ban:" + target.getId(), "1", Duration.ofDays(7));
+            stringRedisTemplate.delete("session:"+target.getId());
         }
     }
     @Override
+    @Transactional
     public void unbanUser(String username){
         checkRole();
         checkUsername(username);
@@ -89,6 +93,7 @@ public class AdminServiceImpl extends ServiceImpl<UserMapper,Users> implements A
     @Override
     public void changeRole(String username,int value){
         checkUsername(username);
+        Users target =this.lambdaQuery().eq(Users::getUsername,username).one();
         int role = UserContext.getRole();
         if(role!=0){
             throw new TokenException("该账号权限不足");
@@ -96,20 +101,11 @@ public class AdminServiceImpl extends ServiceImpl<UserMapper,Users> implements A
         if(value!=1&&value!=2){
             throw new TokenException("修改权限异常，请重试");
         }
-        switch(value){
-            case 1:
-                this.lambdaUpdate()
-                        .eq(Users::getUsername,username)
-                        .set(Users::getRole,1)
-                        .update();
-                break;
-            case 2:
-                this.lambdaUpdate()
-                        .eq(Users::getUsername,username)
-                        .set(Users::getRole,2)
-                        .update();
-                break;
-        }
+        this.lambdaUpdate()
+                .eq(Users::getUsername,username)
+                .set(Users::getRole,value)
+                .update();
+        stringRedisTemplate.delete("session:"+ target.getId());
     }
 
 }
