@@ -123,17 +123,42 @@ function pickAvatar() {
   fileInput.value?.click()
 }
 
+/** 常见图片格式的魔数（文件头），用于确认“真图片”，防止伪装成图片的 HTML/SVG 触发 XSS */
+const IMAGE_MAGIC: { ext: string; bytes: number[] }[] = [
+  { ext: 'png', bytes: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a] },
+  { ext: 'jpeg', bytes: [0xff, 0xd8, 0xff] },
+  { ext: 'gif', bytes: [0x47, 0x49, 0x46, 0x38] },
+  { ext: 'webp', bytes: [0x52, 0x49, 0x46, 0x46] }, // "RIFF" + WEBP
+]
+
+function sniffImageType(file: File): Promise<string | null> {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      const head = new Uint8Array(reader.result as ArrayBuffer, 0, 12)
+      const match = IMAGE_MAGIC.find((m) =>
+        m.bytes.every((b, i) => head[i] === b),
+      )
+      resolve(match ? match.ext : null)
+    }
+    reader.onerror = () => resolve(null)
+    reader.readAsArrayBuffer(file.slice(0, 12))
+  })
+}
+
 async function onAvatarChange(e: Event) {
   const input = e.target as HTMLInputElement
   const file = input.files?.[0]
   input.value = ''
   if (!file) return
-  if (!file.type.startsWith('image/')) {
-    toast.error('请选择图片文件')
-    return
-  }
   if (file.size > 5 * 1024 * 1024) {
     toast.error('图片大小不能超过 5MB')
+    return
+  }
+  // 后端不做类型白名单时，前端用文件头确认真实图片类型（仅允许 png/jpeg/gif/webp）
+  const realType = await sniffImageType(file)
+  if (!realType) {
+    toast.error('仅支持 PNG / JPG / GIF / WEBP 格式的图片')
     return
   }
   uploading.value = true

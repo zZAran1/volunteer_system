@@ -29,9 +29,9 @@ export interface UpdateProfileDTO {
   username: string
 }
 
-/** 修改角色入参 */
+/** 修改角色入参（后端 ChangeRoleDTO，按用户名定位用户） */
 export interface ChangeRoleDTO {
-  email: string
+  username: string
   value: number
 }
 

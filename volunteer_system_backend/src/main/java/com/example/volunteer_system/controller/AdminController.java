@@ -1,6 +1,7 @@
 package com.example.volunteer_system.controller;
 
 import com.example.volunteer_system.model.dto.ChangeRoleDTO;
+import com.example.volunteer_system.model.dto.UsernameDTO;
 import com.example.volunteer_system.model.vo.UserVO;
 import com.example.volunteer_system.result.Result;
 import com.example.volunteer_system.service.AdminService;
@@ -18,13 +19,13 @@ import java.util.List;
 public class AdminController {
     private final AdminService adminService;
     @PutMapping("/banUser")
-    public Result<Void> banUser(@Valid @RequestBody String username) {
-        adminService.banUser(username);
+    public Result<Void> banUser(@Valid @RequestBody UsernameDTO dto) {
+        adminService.banUser(dto.getUsername());
         return Result.success("禁用用户成功");
     }
     @PutMapping("/unbanUser")
-    public Result<Void> unbanUser(@Valid @RequestBody String username) {
-        adminService.unbanUser(username);
+    public Result<Void> unbanUser(@Valid @RequestBody UsernameDTO dto) {
+        adminService.unbanUser(dto.getUsername());
         return Result.success("解封用户成功");
     }
     @GetMapping("/getUser")

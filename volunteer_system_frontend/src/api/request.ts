@@ -40,9 +40,14 @@ async function request<T>(config: AxiosRequestConfig): Promise<T> {
     const res = await http.request<Result<T>>(config)
     const result = res.data
     if (!result || result.code !== 200) {
-      // 登录态失效：清除凭证，由上层跳转登录页
+      // 登录态失效（token 过期 / 被封禁 / 被踢下线）：清除凭证并回到登录页
       if (result && result.code === 1002) {
+        const hadToken = !!authState.token
         clearAuth()
+        if (hadToken && !window.location.pathname.startsWith('/login')) {
+          const redirect = window.location.pathname + window.location.search
+          window.location.replace(`/login?redirect=${encodeURIComponent(redirect)}`)
+        }
       }
       throw new Error(result?.msg || '请求失败')
     }

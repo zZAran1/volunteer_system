@@ -105,18 +105,18 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         return this.baseMapper.SelectActivity(5);
     }
     @Override
-    public void deleteMyActivity(UpdateActivityDTO dto) {
+    public void deleteMyActivity(Integer id) {
         int userId = UserContext.getUserId();
         this.lambdaUpdate()
-                .eq(Activity::getId, dto.getId())
+                .eq(Activity::getId,id)
                 .eq(Activity::getPoster_id, userId)// 只能删除自己发布的活动
                 .remove();
     }
     @Override
-    public void deleteActivity(RegistrationDTO dto){
+    public void deleteActivity(Integer activity_id){
         checkRole();
         this.lambdaUpdate()
-                .eq(Activity::getId,dto.getActivity_id())
+                .eq(Activity::getId,activity_id)
                 .remove();
     }
     @Override

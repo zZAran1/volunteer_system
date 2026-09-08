@@ -3,19 +3,19 @@ import type { ChangeRoleDTO, UserVO } from '@/types/api'
 
 /**
  * 后端 `/api/admin/banUser` 与 `/unbanUser` 接口使用 `@RequestBody String`，
- * 期望请求体是一个 JSON 字符串字面量（形如 "someone@example.com"）。
- * 这里传入原始 email 字符串并指定 application/json，由 axios 序列化为 JSON 字符串。
+ * 期望请求体是一个 JSON 字符串字面量（形如 "zhangsan"），且后端按「用户名」查询用户。
+ * 这里传入原始 username 字符串并指定 application/json，由 axios 序列化为 JSON 字符串。
  */
-function banLike(url: string, email: string): Promise<void> {
-  return put<void>(url, email, { headers: { 'Content-Type': 'application/json' } })
+function banLike(url: string, username: string): Promise<void> {
+  return put<void>(url, username, { headers: { 'Content-Type': 'application/json' } })
 }
 
-export function banUser(email: string): Promise<void> {
-  return banLike('/admin/banUser', email)
+export function banUser(username: string): Promise<void> {
+  return banLike('/admin/banUser', username)
 }
 
-export function unbanUser(email: string): Promise<void> {
-  return banLike('/admin/unbanUser', email)
+export function unbanUser(username: string): Promise<void> {
+  return banLike('/admin/unbanUser', username)
 }
 
 /** 普通志愿者列表（管理员 / 超级管理员可用） */

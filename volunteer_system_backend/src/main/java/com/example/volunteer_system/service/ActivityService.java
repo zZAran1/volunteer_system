@@ -21,8 +21,8 @@ public interface ActivityService extends IService<Activity> {
     List<ActivityVO> fullActivity();
     List<ActivityVO> ongoingActivity();
     List<ActivityVO> rejectedActivity();
-    void deleteMyActivity(UpdateActivityDTO dto);
-    void deleteActivity(RegistrationDTO dto);
+    void deleteMyActivity(Integer activity_id);
+    void deleteActivity(Integer activity_id);
     void reviewEvent_Approved(int activityId);
     void reviewEvent_Rejected(int activityId);
 }

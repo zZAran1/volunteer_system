@@ -40,6 +40,7 @@ D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volun
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\model\vo\LoginVO.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\model\dto\LoginDTO.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\interceptor\AuthInterceptor.java
+D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\task\ActivityStatusTask.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\service\impl\AdminServiceImpl.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\controller\AdminController.java
 D:\Work\VolunteerSystem\volunteer_system_backend\src\main\java\com\example\volunteer_system\model\entity\Activity.java

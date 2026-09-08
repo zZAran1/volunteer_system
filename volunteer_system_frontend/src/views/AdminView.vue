@@ -15,7 +15,8 @@ const users = ref<UserVO[]>([])
 const loading = ref(true)
 const loadError = ref('')
 const keyword = ref('')
-const busyEmail = ref('')
+// 后端按「用户名」定位用户（banUser/unbanUser/changeRole），故操作跟踪用户名而非邮箱
+const busyUsername = ref('')
 
 const isSuperAdmin = computed(() => authState.profile?.role === ROLE.SUPER_ADMIN)
 
@@ -71,33 +72,33 @@ function initials(u: UserVO): string {
 
 async function toggleBan(u: UserVO) {
   const banning = u.status !== STATUS.BANNED
-  busyEmail.value = u.email
+  busyUsername.value = u.username
   try {
     if (banning) {
-      await banUser(u.email)
+      await banUser(u.username)
       toast.success(`已封禁「${u.username}」`)
     } else {
-      await unbanUser(u.email)
+      await unbanUser(u.username)
       toast.success(`已解封「${u.username}」`)
     }
     await load()
   } catch (e) {
     toast.error((e as Error).message)
   } finally {
-    busyEmail.value = ''
+    busyUsername.value = ''
   }
 }
 
 async function assignRole(u: UserVO, value: number) {
-  busyEmail.value = u.email
+  busyUsername.value = u.username
   try {
-    await changeRole({ email: u.email, value })
+    await changeRole({ username: u.username, value })
     toast.success(`已将「${u.username}」设为${roleLabel(value)}`)
     await load()
   } catch (e) {
     toast.error((e as Error).message)
   } finally {
-    busyEmail.value = ''
+    busyUsername.value = ''
   }
 }
 
@@ -217,7 +218,7 @@ onMounted(load)
                     <button
                       v-if="u.role === ROLE.USER"
                       class="btn btn-ghost btn-sm"
-                      :disabled="busyEmail === u.email"
+                      :disabled="busyUsername === u.username"
                       @click="assignRole(u, ROLE.ADMIN)"
                     >
                       设为管理员
@@ -225,7 +226,7 @@ onMounted(load)
                     <button
                       v-else-if="u.role === ROLE.ADMIN"
                       class="btn btn-ghost btn-sm"
-                      :disabled="busyEmail === u.email"
+                      :disabled="busyUsername === u.username"
                       @click="assignRole(u, ROLE.USER)"
                     >
                       设为普通用户
@@ -235,7 +236,7 @@ onMounted(load)
                   <button
                     v-if="u.status === STATUS.ACTIVE"
                     class="btn btn-danger-ghost btn-sm"
-                    :disabled="busyEmail === u.email"
+                    :disabled="busyUsername === u.username"
                     @click="toggleBan(u)"
                   >
                     封禁
@@ -243,7 +244,7 @@ onMounted(load)
                   <button
                     v-else
                     class="btn btn-ghost btn-sm"
-                    :disabled="busyEmail === u.email"
+                    :disabled="busyUsername === u.username"
                     @click="toggleBan(u)"
                   >
                     解封

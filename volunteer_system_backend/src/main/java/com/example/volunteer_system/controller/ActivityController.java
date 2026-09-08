@@ -75,13 +75,13 @@ public class ActivityController {
         return Result.success(list);
     }
     @DeleteMapping("/deleteMyActivity")
-    public Result<Void> deleteMyActivity(@RequestParam UpdateActivityDTO dto) {
-        activityService.deleteMyActivity(dto);
+    public Result<Void> deleteMyActivity(@RequestParam Integer activity_id) {
+        activityService.deleteMyActivity(activity_id);
         return Result.success("删除该活动成功");
     }
     @DeleteMapping("/deleteActivity")
-    public Result<Void> deleteActivity(@RequestParam RegistrationDTO dto) {
-        activityService.deleteActivity(dto);
+    public Result<Void> deleteActivity(@RequestParam Integer activity_id) {
+        activityService.deleteActivity(activity_id);
         return Result.success("删除该活动成功");
     }
     @PutMapping("/reviewEvent_Approved")

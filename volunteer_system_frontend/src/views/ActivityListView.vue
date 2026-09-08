@@ -55,6 +55,12 @@ function isFull(a: ActivityVO): boolean {
   return !!a.headcount_limit && (a.headcount ?? 0) >= a.headcount_limit
 }
 
+/** 未报名时才需要判断是否可报名（已报名始终允许取消） */
+function canNotJoin(a: ActivityVO): boolean {
+  if (registeredIds.value.has(a.id)) return false
+  return isMine(a) || isFull(a)
+}
+
 /** 静默刷新：操作成功后重新拉取列表与报名状态，保证人数与后端一致 */
 async function refreshQuietly() {
   try {
@@ -243,7 +249,7 @@ onMounted(load)
         <button
           class="btn register-btn"
           :class="registeredIds.has(a.id) ? 'btn-danger-ghost' : 'btn-primary'"
-          :disabled="busyId === a.id || isMine(a) || isFull(a)"
+          :disabled="busyId === a.id || canNotJoin(a)"
           @click="onRegister(a)"
         >
           {{

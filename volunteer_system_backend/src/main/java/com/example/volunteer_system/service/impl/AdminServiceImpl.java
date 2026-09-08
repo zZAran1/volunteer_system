@@ -28,6 +28,9 @@ public class AdminServiceImpl extends ServiceImpl<UserMapper,Users> implements A
         }
     }
     private void checkUsername(String username){
+        if(username==null|| username.isEmpty()){
+            throw new TokenException("用户名不存在");
+        }
         Users users = this.lambdaQuery()
                 .eq(Users::getUsername,username)
                 .select(Users::getRole)

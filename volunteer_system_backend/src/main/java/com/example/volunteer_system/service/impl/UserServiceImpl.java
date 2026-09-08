@@ -24,10 +24,13 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -38,6 +41,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     private  JwtUtil jwtUtil;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
     @Value("${file.upload.path}")
     private String uploadPath;
     @Override
@@ -86,6 +91,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         String ext=(original!=null && original.contains("."))
                 ?original.substring(original.lastIndexOf("."))
                 : ".png";
+        List<String> allowedExt=List.of(".jpg",".jpeg",".webp",".png");
+        if(!allowedExt.contains(ext.toLowerCase())){
+            throw new ProfileException("头像文件仅支持jpg/jpeg/png/webp 格式");
+        }
         String filename= UUID.randomUUID().toString().replace("-","")+ext;
         File dir=new File(uploadPath);
         if(!dir.exists()) dir.mkdirs();
@@ -93,6 +102,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
             file.transferTo(new File(dir,filename));
         } catch (IOException e) {
             throw new ProfileException("头像上传失败");
+        }
+        BufferedImage image = ImageIO.read(file.getInputStream());
+        if (image == null) {
+            throw new ProfileException("文件无法解析为图片");
         }
         String url="/uploads/" +filename;
         this.lambdaUpdate()
@@ -114,5 +127,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         this.lambdaUpdate()
                 .eq(Users::getId,user_id)
                 .remove();
+        redisTemplate.delete("session:"+user_id);
     }
 }
