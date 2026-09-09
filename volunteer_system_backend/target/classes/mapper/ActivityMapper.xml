@@ -80,4 +80,10 @@
           AND start_date &lt;= CURDATE()
           AND end_date &gt;= CURDATE()
     </update>
+    <update id ="refreshFull">
+        UPDATE activity
+        SET status=3
+        WHERE status=1
+          AND headcount=headcount_limit
+    </update>
 </mapper>

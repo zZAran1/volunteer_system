@@ -44,6 +44,9 @@ public class AuthInterceptor implements HandlerInterceptor {
                 .eq(Users::getId, user_id)
                 .select(Users::getStatus)
                 .one();
+        if(users==null){
+            throw new TokenException("登录失效，请重新登录");
+        }
         if(users.getStatus()!=1){
             throw new TokenException("该账号已被封禁，请联系联系管理员");
         }

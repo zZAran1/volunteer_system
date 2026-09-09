@@ -16,5 +16,6 @@ public interface ActivityMapper extends BaseMapper<Activity> {
     List<ActivityVO> selectRegistered(@Param("MyId") Integer Id);
     void refreshEnded();
     void refreshOngoing();
-
+    void refreshFull();
+    void refreshUnFull();
 }

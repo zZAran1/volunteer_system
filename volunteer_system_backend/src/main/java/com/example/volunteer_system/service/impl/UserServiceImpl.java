@@ -2,13 +2,11 @@ package com.example.volunteer_system.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.volunteer_system.converter.Converter;
-import com.example.volunteer_system.exception.BaseBusinessException;
 import com.example.volunteer_system.exception.LoginException;
 import com.example.volunteer_system.exception.ProfileException;
 import com.example.volunteer_system.exception.RegisterException;
-
+import com.example.volunteer_system.exception.TokenException;
 import com.example.volunteer_system.mapper.UserMapper;
-import com.example.volunteer_system.model.dto.AvatarUpdateDTO;
 import com.example.volunteer_system.model.dto.LoginDTO;
 import com.example.volunteer_system.model.dto.RegisterDTO;
 import com.example.volunteer_system.model.dto.UpdateProfileDTO;
@@ -22,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -41,14 +40,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     private  JwtUtil jwtUtil;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
-    @Autowired
-    private StringRedisTemplate redisTemplate;
     @Value("${file.upload.path}")
     private String uploadPath;
     @Override
     public void register(RegisterDTO dto){
         if(this.lambdaQuery().eq(Users::getEmail,dto.getEmail()).exists()){
             throw new RegisterException("该邮箱已被注册，请返回登录");
+        }
+        if(this.lambdaQuery().eq(Users::getUsername,dto.getUsername()).exists()){
+            throw new ProfileException("该用户名已被使用");
         }
         dto.setPassword(bCryptPasswordUtil.hashPassword(dto.getPassword()));
         Users user = Converter.INSTANCE.toUser(dto);
@@ -79,6 +79,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     @Override
     public void updateProfile(UpdateProfileDTO dto){
         int user_id=UserContext.getUserId();
+        Users db_user = this.lambdaQuery()
+                .eq(Users::getId,user_id)
+                .select(Users::getUsername)
+                .one();
+        if(db_user==null){
+            throw new TokenException("登录失效，请重新登录");
+        }
+        if(this.lambdaQuery().eq(Users::getUsername,dto.getUsername()).exists()&&!dto.getUsername().equals(db_user.getUsername())){
+            throw new ProfileException("该用户名已被使用");
+        }
         this.lambdaUpdate()
                 .eq(Users::getId,user_id)
                 .set(Users::getUsername,dto.getUsername())
@@ -99,13 +109,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         File dir=new File(uploadPath);
         if(!dir.exists()) dir.mkdirs();
         try {
+            BufferedImage image = ImageIO.read(file.getInputStream());
+            if (image == null) {
+                throw new ProfileException("文件无法解析为图片");
+            }
             file.transferTo(new File(dir,filename));
         } catch (IOException e) {
             throw new ProfileException("头像上传失败");
-        }
-        BufferedImage image = ImageIO.read(file.getInputStream());
-        if (image == null) {
-            throw new ProfileException("文件无法解析为图片");
         }
         String url="/uploads/" +filename;
         this.lambdaUpdate()
@@ -122,11 +132,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
         return Converter.INSTANCE.toProfileVO(db_user);
     }
     @Override
+    @Transactional
     public void deleteUser(){
         int user_id= UserContext.getUserId();
         this.lambdaUpdate()
                 .eq(Users::getId,user_id)
                 .remove();
-        redisTemplate.delete("session:"+user_id);
+        stringRedisTemplate.delete("session:"+user_id);
     }
 }

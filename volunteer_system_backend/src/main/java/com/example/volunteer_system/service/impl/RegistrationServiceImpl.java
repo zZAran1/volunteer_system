@@ -22,6 +22,16 @@ public class RegistrationServiceImpl extends ServiceImpl<RegistrationMapper, Reg
     @Transactional
     public void registrant(RegistrationDTO dto){
         int user_id =UserContext.getUserId();
+        Activity db_activity=activityService.lambdaQuery()
+                .eq(Activity::getId,dto.getActivity_id())
+                .select(Activity::getPoster_id,Activity::getStatus)
+                .one();
+        if(db_activity==null||db_activity.getStatus()!=1){
+            throw new RegistrationException("活动报名失败");
+        }
+        if(db_activity.getPoster_id()==user_id){
+            throw new RegistrationException("不能报名自己发布的活动");
+        }
         if (!this.baseMapper.insertRegistration(dto.getActivity_id(),user_id)) {
             throw new RegistrationException("请勿重复报名");
         }

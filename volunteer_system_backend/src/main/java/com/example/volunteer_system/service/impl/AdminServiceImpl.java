@@ -35,6 +35,9 @@ public class AdminServiceImpl extends ServiceImpl<UserMapper,Users> implements A
                 .eq(Users::getUsername,username)
                 .select(Users::getRole)
                 .one();
+        if(users==null){
+            throw new TokenException("用户不存在");
+        }
         if(users.getRole()==0){
             throw new TokenException("没有权限操作该账号");
         }

@@ -5,15 +5,12 @@ import com.example.volunteer_system.converter.Converter;
 import com.example.volunteer_system.exception.TokenException;
 import com.example.volunteer_system.mapper.ActivityMapper;
 import com.example.volunteer_system.model.dto.CreateActivityDTO;
-import com.example.volunteer_system.model.dto.RegistrationDTO;
 import com.example.volunteer_system.model.dto.UpdateActivityDTO;
 import com.example.volunteer_system.model.entity.Activity;
 import com.example.volunteer_system.model.vo.ActivityVO;
 import com.example.volunteer_system.service.ActivityService;
 import com.example.volunteer_system.util.UserContext;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDate;
 import java.util.List;
 
 
@@ -29,6 +26,8 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     private void updateTime(){
         this.baseMapper.refreshEnded();
         this.baseMapper.refreshOngoing();
+        this.baseMapper.refreshFull();
+        this.baseMapper.refreshUnFull();
     }
     @Override
     public void createActivity(CreateActivityDTO dto) {
