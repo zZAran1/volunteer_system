@@ -13,7 +13,7 @@ public interface ActivityMapper extends BaseMapper<Activity> {
     List<ActivityVO> SelectActivity(@Param("statusId") Integer statusId);
     List<ActivityVO> selectMyActivity(@Param("posterId") Integer posterId);
     List<ActivityVO> selectRegistered(@Param("MyId") Integer Id);
-    List<ActivityVO> titleSelectActivity(@Param("title") String title);
+    List<ActivityVO> titleSelectActivity(@Param("title") String title ,@Param("statusId") Integer statusId);
     void refreshEnded();
     void refreshOngoing();
     void refreshFull();

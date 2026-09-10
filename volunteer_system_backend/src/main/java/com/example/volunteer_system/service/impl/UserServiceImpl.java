@@ -51,7 +51,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     @Override
     public void register(RegisterDTO dto){
         if(this.lambdaQuery().eq(Users::getEmail,dto.getEmail()).exists()){
-            throw new RegisterException("该邮箱已被注册，请返回登录");
+            throw new RegisterException("邮箱或密码错误");
         }
         if(this.lambdaQuery().eq(Users::getUsername,dto.getUsername()).exists()){
             throw new ProfileException("该用户名已被使用");
@@ -139,6 +139,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
                 .eq(Users::getId,user_id)
                 .one();
         return Converter.INSTANCE.toProfileVO(db_user);
+    }
+    @Override
+    public void logout(){
+        int user_id=UserContext.getUserId();
+        stringRedisTemplate.delete("session:"+user_id);
     }
     @Override
     @Transactional

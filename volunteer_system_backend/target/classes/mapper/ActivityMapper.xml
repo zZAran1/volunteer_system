@@ -16,7 +16,7 @@
                u.username AS poster_name
         FROM activity a
                  LEFT JOIN users u ON a.poster_id = u.id
-        ORDER BY a.id DESC
+        ORDER BY a.start_date ASC
     </select>
     <select id="selectMyActivity" resultType="com.example.volunteer_system.model.vo.ActivityVO">
         SELECT a.id,
@@ -32,7 +32,7 @@
         FROM activity a
                  LEFT JOIN users u ON a.poster_id = u.id
         WHERE a.poster_id = #{posterId}
-        ORDER BY a.id DESC
+        ORDER BY a.start_date ASC
     </select>
     <select id="SelectActivity" resultType="com.example.volunteer_system.model.vo.ActivityVO">
         SELECT a.id,
@@ -48,7 +48,7 @@
         FROM activity a
                  LEFT JOIN users u ON a.poster_id = u.id
         WHERE a.status= #{statusId}
-        ORDER BY a.id DESC
+        ORDER BY a.start_date ASC
     </select>
     <select id="selectRegistered" resultType="com.example.volunteer_system.model.vo.ActivityVO">
         SELECT a.id,
@@ -81,6 +81,7 @@
         FROM activity a
                  LEFT JOIN users u ON a.poster_id = u.id
         WHERE a.title LIKE CONCAT('%',#{title},'%')
+        AND a.status=#{statusId}
         ORDER BY a.start_date ASC
     </select>
     <update id="refreshEnded">

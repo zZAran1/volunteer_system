@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import {
   deleteActivityByAdmin,
   getAllActivities,
@@ -10,6 +10,7 @@ import {
   getUnderReviewActivities,
   reviewApprove,
   reviewReject,
+  searchActivitiesByTitle,
 } from '@/api/activity'
 import {
   activityStatusClass,
@@ -47,6 +48,10 @@ const activities = ref<ActivityVO[]>([])
 const loading = ref(false)
 const loadError = ref('')
 const busyId = ref<number | null>(null)
+/** 按标题搜索关键词；非空时改用后端 titleSelectActivity（结果包含全部状态） */
+const keyword = ref('')
+
+const searching = computed(() => keyword.value.trim().length > 0)
 
 const loaders: Record<TabKey, () => Promise<ActivityVO[]>> = {
   review: getUnderReviewActivities,
@@ -60,8 +65,11 @@ const loaders: Record<TabKey, () => Promise<ActivityVO[]>> = {
 async function load() {
   loading.value = true
   loadError.value = ''
+  const title = keyword.value.trim()
   try {
-    activities.value = await loaders[activeTab.value]()
+    activities.value = title
+      ? await searchActivitiesByTitle(title)
+      : await loaders[activeTab.value]()
   } catch (e) {
     loadError.value = (e as Error).message
   } finally {
@@ -71,6 +79,12 @@ async function load() {
 
 async function switchTab(key: TabKey) {
   activeTab.value = key
+  keyword.value = ''
+  await load()
+}
+
+async function clearSearch() {
+  keyword.value = ''
   await load()
 }
 
@@ -139,11 +153,34 @@ onMounted(load)
         v-for="t in tabs"
         :key="t.key"
         class="tab"
-        :class="{ 'is-active': activeTab === t.key }"
+        :class="{ 'is-active': !searching && activeTab === t.key }"
         @click="switchTab(t.key)"
       >
         {{ t.label }}
       </button>
+    </div>
+
+    <div class="toolbar animate-in">
+      <div class="search">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+          <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6" fill="none" />
+          <path d="m11 11 3 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+        <input
+          v-model="keyword"
+          class="search-input"
+          type="text"
+          placeholder="按活动标题搜索（含全部状态）"
+          @keyup.enter="load"
+        />
+      </div>
+      <div class="toolbar-actions">
+        <button v-if="searching" class="btn btn-ghost btn-sm" @click="clearSearch">
+          退出搜索
+        </button>
+        <button class="btn btn-ghost btn-sm" :disabled="loading" @click="load">搜索</button>
+        <span class="muted count-hint">共 {{ activities.length }} 场</span>
+      </div>
     </div>
 
     <div v-if="loadError" class="inline-hint error animate-in" role="alert">{{ loadError }}</div>
@@ -171,8 +208,10 @@ onMounted(load)
           />
         </svg>
       </div>
-      <p class="empty-title">该分类下暂无活动</p>
-      <p class="empty-desc">切换其他分类查看，或等待用户发布新活动</p>
+      <p class="empty-title">{{ searching ? '没有匹配的活动标题' : '该分类下暂无活动' }}</p>
+      <p class="empty-desc">
+        {{ searching ? '换个关键词试试，或退出搜索查看分类列表' : '切换其他分类查看，或等待用户发布新活动' }}
+      </p>
     </div>
 
     <div v-else class="card card-pad animate-in">
@@ -285,6 +324,57 @@ onMounted(load)
   color: #fff;
 }
 
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  max-width: 380px;
+  padding: 10px 14px;
+  border: 1px solid var(--c-line-strong);
+  border-radius: var(--r-sm);
+  color: var(--c-ink-mute);
+  background: var(--c-surface);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.search:focus-within {
+  border-color: var(--c-primary);
+  box-shadow: var(--shadow-ring);
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-size: 14px;
+  color: var(--c-ink);
+}
+
+.search-input::placeholder {
+  color: var(--c-ink-mute);
+}
+
+.count-hint {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
 .spinner {
   width: 28px;
   height: 28px;
@@ -314,5 +404,20 @@ onMounted(load)
 .row-actions {
   display: flex;
   gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search {
+    max-width: none;
+  }
+
+  .toolbar-actions {
+    justify-content: space-between;
+  }
 }
 </style>

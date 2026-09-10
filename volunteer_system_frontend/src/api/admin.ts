@@ -2,12 +2,11 @@ import { post, put, get } from './request'
 import type { ChangeRoleDTO, UserVO } from '@/types/api'
 
 /**
- * 后端 `/api/admin/banUser` 与 `/unbanUser` 接口使用 `@RequestBody String`，
- * 期望请求体是一个 JSON 字符串字面量（形如 "zhangsan"），且后端按「用户名」查询用户。
- * 这里传入原始 username 字符串并指定 application/json，由 axios 序列化为 JSON 字符串。
+ * 后端 `/api/admin/banUser` 与 `/unbanUser` 接口签名为 `@Valid @RequestBody UsernameDTO`，
+ * 期望请求体为对象 `{ "username": "zhangsan" }`，且按「用户名」定位用户。
  */
 function banLike(url: string, username: string): Promise<void> {
-  return put<void>(url, username, { headers: { 'Content-Type': 'application/json' } })
+  return put<void>(url, { username })
 }
 
 export function banUser(username: string): Promise<void> {

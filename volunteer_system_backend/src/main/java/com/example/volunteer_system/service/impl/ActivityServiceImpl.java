@@ -80,7 +80,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     @Override
     public List<ActivityVO> selectActivity(SelectActivityDTO dto){
         updateTime();
-        return this.baseMapper.titleSelectActivity(dto.getTitle());
+        return this.baseMapper.titleSelectActivity(dto.getTitle(),1);
     }
     @Override
     public List<ActivityVO> getAllActivities() {

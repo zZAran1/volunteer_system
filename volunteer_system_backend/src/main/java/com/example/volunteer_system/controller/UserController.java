@@ -53,6 +53,11 @@ public class UserController {
     public Result<ProfileVO> getProfile() {
         return Result.success(userService.getProfile());
     }
+    @PostMapping("/logout")
+    public Result<Void> logout() {
+        userService.logout();
+        return Result.success("退出登录成功");
+    }
     @DeleteMapping("/deleteUser")
     public Result<Void> deleteUser() {
         userService.deleteUser();

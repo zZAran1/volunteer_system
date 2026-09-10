@@ -42,9 +42,11 @@ public class CaptchaServiceImpl implements CaptchaService {
     public void verifyCaptcha(String captchaId,String captchaText){
         String redisKey = CAPTCHA_KEY_PREFIX + captchaId;
         String savedCode = redisTemplate.opsForValue().get(redisKey);
-
         if (savedCode == null) {
             throw new CaptchaException("验证码已过期，请刷新重试");
+        }
+        if(!Boolean.TRUE.equals(redisTemplate.delete(redisKey))){
+            throw new CaptchaException("验证码已失效，请刷新重试");
         }
         if (!savedCode.equalsIgnoreCase(captchaText)) {
             throw new CaptchaException("验证码错误");

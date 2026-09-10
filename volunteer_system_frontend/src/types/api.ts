@@ -152,7 +152,7 @@ export interface UpdateActivityDTO extends CreateActivityDTO {
   id: number
 }
 
-/** 报名 / 取消报名入参（后端 RegistrationDTO，接口为表单/查询参数绑定） */
+/** 报名 / 取消报名入参（后端 RegistrationDTO，以 JSON body 提交） */
 export interface RegistrationDTO {
   activity_id: number
 }

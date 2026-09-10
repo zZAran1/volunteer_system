@@ -7,6 +7,7 @@ import {
   updateActivity,
 } from '@/api/activity'
 import {
+  ACTIVITY_STATUS,
   activityStatusClass,
   activityStatusLabel,
   type ActivityVO,
@@ -16,6 +17,13 @@ import { useToast } from '@/composables/toast'
 const statusClass = activityStatusClass
 
 const toast = useToast()
+
+/** 后端 updateActivity 仅允许修改「待审核 / 招募中 / 已满员」的活动 */
+const EDITABLE_STATUS: number[] = [
+  ACTIVITY_STATUS.PENDING,
+  ACTIVITY_STATUS.RECRUITING,
+  ACTIVITY_STATUS.FULL,
+]
 
 const activities = ref<ActivityVO[]>([])
 const loading = ref(true)
@@ -105,7 +113,12 @@ async function onSubmit() {
   }
 }
 
+function canEdit(a: ActivityVO): boolean {
+  return EDITABLE_STATUS.includes(a.status)
+}
+
 function startEdit(a: ActivityVO) {
+  if (!canEdit(a)) return
   editingId.value = a.id
   form.title = a.title
   form.address = a.address
@@ -344,7 +357,8 @@ onMounted(load)
             <div class="act-item-actions">
               <button
                 class="btn btn-ghost btn-sm"
-                :disabled="busyId === a.id"
+                :disabled="busyId === a.id || !canEdit(a)"
+                :title="canEdit(a) ? undefined : '仅待审核 / 招募中 / 已满员的活动可修改'"
                 @click="startEdit(a)"
               >
                 编辑

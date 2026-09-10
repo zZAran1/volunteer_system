@@ -1,18 +1,17 @@
 import { post } from './request'
+import type { RegistrationDTO } from '@/types/api'
 
 /**
  * 报名 / 取消报名。
- * 后端接口参数是 `@Validated RegistrationDTO`（没有 @RequestBody），
- * 由 Spring 从表单 / 查询参数绑定，所以 activity_id 走查询串而不是 JSON body。
+ * 后端签名为 `@Validated @RequestBody RegistrationDTO`，
+ * 因此 activity_id 必须放在 JSON body 中提交（不能走查询串）。
  */
 export function registrant(activityId: number): Promise<void> {
-  return post<void>('/registration/registrant', undefined, {
-    params: { activity_id: activityId },
-  })
+  const payload: RegistrationDTO = { activity_id: activityId }
+  return post<void>('/registration/registrant', payload)
 }
 
 export function unRegistrant(activityId: number): Promise<void> {
-  return post<void>('/registration/unRegistrant', undefined, {
-    params: { activity_id: activityId },
-  })
+  const payload: RegistrationDTO = { activity_id: activityId }
+  return post<void>('/registration/unRegistrant', payload)
 }

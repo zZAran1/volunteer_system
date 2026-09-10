@@ -1,6 +1,8 @@
 package com.example.volunteer_system.config;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
+import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +21,15 @@ public class RedisConfig {
     private ObjectMapper objectMapper;
     @Bean
     public RedisCacheManager cacheManager(RedisConnectionFactory factory) {
+        PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
+                .allowIfSubType("com.example.volunteer_system.model.vo.")
+                .allowIfSubType("java.util.ArrayList")
+                .allowIfSubType("java.util.LinkedList")
+                .allowIfSubType("java.util.HashSet")
+                .allowIfSubType("java.util.LinkedHashSet")
+                .allowIfSubType("java.util.HashMap")
+                .allowIfSubType("java.util.LinkedHashMap")
+                .build();
         ObjectMapper redisMapper = objectMapper.copy();
         redisMapper.activateDefaultTyping(
             LaissezFaireSubTypeValidator.instance,

@@ -15,6 +15,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private AuthInterceptor authInterceptor;
     @Value("${file.upload.path}")
     private String uploadPath;
+    @Value("${app.cors.allowed-origins}")
+    private String[] allowedOrigins;
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
@@ -33,10 +35,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOriginPatterns("*")
+                .allowedOrigins(allowedOrigins)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true)
                 .maxAge(3600);
     }
 }

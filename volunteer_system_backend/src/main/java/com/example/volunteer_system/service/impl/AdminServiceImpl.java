@@ -38,7 +38,7 @@ public class AdminServiceImpl extends ServiceImpl<UserMapper,Users> implements A
         if(users==null){
             throw new TokenException("用户不存在");
         }
-        if(users.getRole()==0){
+        if(users.getRole()!=2){
             throw new TokenException("没有权限操作该账号");
         }
     }

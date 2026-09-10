@@ -62,20 +62,27 @@ export function updateActivity(dto: UpdateActivityDTO): Promise<void> {
 
 /**
  * 删除自己发布的活动。
- * 后端为 DELETE /activity/deleteMyActivity，@RequestParam 绑定 UpdateActivityDTO，
- * 实际只用 id，通过查询串传。
+ * 后端签名为 `@RequestParam Integer activity_id`，参数名必须是 activity_id。
  */
 export function deleteMyActivity(id: number): Promise<void> {
-  return del<void>('/activity/deleteMyActivity', { params: { id } })
+  return del<void>('/activity/deleteMyActivity', { params: { activity_id: id } })
 }
 
 /**
  * 管理员删除任意活动。
- * 后端为 DELETE /activity/deleteActivity，@RequestParam 绑定 RegistrationDTO，
- * 参数名为 activity_id。
+ * 后端签名为 `@RequestParam Integer activity_id`。
  */
 export function deleteActivityByAdmin(activityId: number): Promise<void> {
   return del<void>('/activity/deleteActivity', { params: { activity_id: activityId } })
+}
+
+/**
+ * 按标题模糊搜索活动。
+ * 后端 `@RequestParam SelectActivityDTO`，从查询串绑定 title；
+ * 该接口不做状态过滤（返回全部状态），仅适合管理员使用。
+ */
+export function searchActivitiesByTitle(title: string): Promise<ActivityVO[]> {
+  return get<ActivityVO[]>('/activity/titleSelectActivity', { params: { title } })
 }
 
 /** 审核通过活动（JSON body：{ activity_id }） */

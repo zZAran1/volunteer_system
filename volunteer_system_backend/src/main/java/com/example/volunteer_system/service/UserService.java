@@ -16,4 +16,5 @@ public interface UserService extends IService<Users> {
     void avatarUpdate(MultipartFile file);
     ProfileVO getProfile();
     void deleteUser();
+    void logout();
 }
