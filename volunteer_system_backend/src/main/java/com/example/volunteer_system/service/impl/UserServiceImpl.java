@@ -10,8 +10,10 @@ import com.example.volunteer_system.mapper.UserMapper;
 import com.example.volunteer_system.model.dto.LoginDTO;
 import com.example.volunteer_system.model.dto.RegisterDTO;
 import com.example.volunteer_system.model.dto.UpdateProfileDTO;
+import com.example.volunteer_system.model.entity.Registration;
 import com.example.volunteer_system.model.entity.Users;
 import com.example.volunteer_system.model.vo.ProfileVO;
+import com.example.volunteer_system.service.RegistrationService;
 import com.example.volunteer_system.service.UserService;
 import com.example.volunteer_system.util.BCryptPasswordUtil;
 import com.example.volunteer_system.util.JwtUtil;
@@ -21,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -31,6 +34,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 
@@ -40,6 +44,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     private  JwtUtil jwtUtil;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private RegistrationService registrationService;
     @Value("${file.upload.path}")
     private String uploadPath;
     @Override
@@ -79,6 +85,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     @Override
     public void updateProfile(UpdateProfileDTO dto){
         int user_id=UserContext.getUserId();
+        if(dto.getUsername()==null){
+            throw new ProfileException("用户名不能为空");
+        }
         Users db_user = this.lambdaQuery()
                 .eq(Users::getId,user_id)
                 .select(Users::getUsername)
@@ -135,6 +144,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, Users> implements U
     @Transactional
     public void deleteUser(){
         int user_id= UserContext.getUserId();
+        List<Integer> activityIdList=registrationService.lambdaQuery()
+                .eq(Registration::getRegistrant_id,user_id)
+                .select(Registration::getActivity_id)
+                .list()
+                .stream()
+                .map(Registration::getActivity_id)
+                .distinct()
+                .collect(Collectors.toList());
+        for(Integer activityId:activityIdList){
+            registrationService.unRegistrant(activityId);
+        }
         this.lambdaUpdate()
                 .eq(Users::getId,user_id)
                 .remove();

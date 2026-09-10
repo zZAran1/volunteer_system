@@ -1,7 +1,6 @@
 package com.example.volunteer_system.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.volunteer_system.model.dto.RegistrationDTO;
 import com.example.volunteer_system.model.entity.Activity;
 import com.example.volunteer_system.model.vo.ActivityVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -14,6 +13,7 @@ public interface ActivityMapper extends BaseMapper<Activity> {
     List<ActivityVO> SelectActivity(@Param("statusId") Integer statusId);
     List<ActivityVO> selectMyActivity(@Param("posterId") Integer posterId);
     List<ActivityVO> selectRegistered(@Param("MyId") Integer Id);
+    List<ActivityVO> titleSelectActivity(@Param("title") String title);
     void refreshEnded();
     void refreshOngoing();
     void refreshFull();

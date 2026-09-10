@@ -67,6 +67,22 @@
         WHERE r.registrant_id=#{MyId}
         ORDER BY a.start_date ASC
     </select>
+    <select id="titleSelectActivity" resultType="com.example.volunteer_system.model.vo.ActivityVO">
+        SELECT a.id,
+               a.title,
+               a.address,
+               a.start_date,
+               a.end_date,
+               a.description,
+               a.headcount,
+               a.headcount_limit,
+               a.status,
+               u.username AS poster_name
+        FROM activity a
+                 LEFT JOIN users u ON a.poster_id = u.id
+        WHERE a.title LIKE CONCAT('%',#{title},'%')
+        ORDER BY a.start_date ASC
+    </select>
     <update id="refreshEnded">
         UPDATE activity
         SET status = 4
@@ -85,5 +101,11 @@
         SET status=3
         WHERE status=1
           AND headcount=headcount_limit
+    </update>
+    <update id ="refreshUnFull">
+        UPDATE activity
+        SET status=1
+        WHERE status=3
+          AND headcount &lt; headcount_limit
     </update>
 </mapper>

@@ -2,6 +2,7 @@ package com.example.volunteer_system.controller;
 
 import com.example.volunteer_system.model.dto.CreateActivityDTO;
 import com.example.volunteer_system.model.dto.RegistrationDTO;
+import com.example.volunteer_system.model.dto.SelectActivityDTO;
 import com.example.volunteer_system.model.dto.UpdateActivityDTO;
 import com.example.volunteer_system.model.vo.ActivityVO;
 import com.example.volunteer_system.result.Result;
@@ -28,6 +29,11 @@ public class ActivityController {
     public Result<Void> updateActivity(@Validated @RequestBody UpdateActivityDTO dto) {
         activityService.updateActivity(dto);
         return Result.success("修改活动内容成功，待管理员审核");
+    }
+    @GetMapping("/titleSelectActivity")
+    public Result<List<ActivityVO>> titleSelectActivity(@Validated @RequestParam SelectActivityDTO dto) {
+        List<ActivityVO> list=activityService.selectActivity(dto);
+        return Result.success(list);
     }
     @GetMapping("/getAllActivity")//管理员看到的所有活动
     public Result<List<ActivityVO>> getAllActivity() {

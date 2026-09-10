@@ -20,10 +20,10 @@ public class RegistrationServiceImpl extends ServiceImpl<RegistrationMapper, Reg
     private  ActivityService activityService;
     @Override
     @Transactional
-    public void registrant(RegistrationDTO dto){
+    public void registrant(int activity_id){
         int user_id =UserContext.getUserId();
         Activity db_activity=activityService.lambdaQuery()
-                .eq(Activity::getId,dto.getActivity_id())
+                .eq(Activity::getId,activity_id)
                 .select(Activity::getPoster_id,Activity::getStatus)
                 .one();
         if(db_activity==null||db_activity.getStatus()!=1){
@@ -32,11 +32,11 @@ public class RegistrationServiceImpl extends ServiceImpl<RegistrationMapper, Reg
         if(db_activity.getPoster_id()==user_id){
             throw new RegistrationException("不能报名自己发布的活动");
         }
-        if (!this.baseMapper.insertRegistration(dto.getActivity_id(),user_id)) {
+        if (!this.baseMapper.insertRegistration(activity_id,user_id)) {
             throw new RegistrationException("请勿重复报名");
         }
         boolean updated = activityService.lambdaUpdate()
-                .eq(Activity::getId, dto.getActivity_id())
+                .eq(Activity::getId, activity_id)
                 .apply("headcount < headcount_limit")
                 .setSql("headcount = headcount + 1")
                 .update();
@@ -46,15 +46,15 @@ public class RegistrationServiceImpl extends ServiceImpl<RegistrationMapper, Reg
     }
     @Override
     @Transactional
-    public void unRegistrant(RegistrationDTO dto){
+    public void unRegistrant(int activity_id){
         int user_id =UserContext.getUserId();
         boolean deleted =this.lambdaUpdate()
                 .eq(Registration::getRegistrant_id, user_id)
-                .eq(Registration::getActivity_id, dto.getActivity_id())
+                .eq(Registration::getActivity_id, activity_id)
                 .remove();
         if(deleted){
             boolean update=activityService.lambdaUpdate()
-                    .eq(Activity::getId, dto.getActivity_id())
+                    .eq(Activity::getId, activity_id)
                     .gt(Activity::getHeadcount, 0)
                     .setSql("headcount=headcount - 1")
                     .update();

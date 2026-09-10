@@ -20,13 +20,13 @@ public class RegistrationController {
 
     @PostMapping("/registrant")
     public Result<Void> registrant(@Validated @RequestBody RegistrationDTO dto) {
-        registrationService.registrant(dto);
+        registrationService.registrant(dto.getActivity_id());
         return Result.success("报名成功");
     }
 
     @PostMapping("/unRegistrant")
     public Result<Void> unRegistrant(@Validated @RequestBody RegistrationDTO dto) {
-        registrationService.unRegistrant(dto);
+        registrationService.unRegistrant(dto.getActivity_id());
         return Result.success("取消报名成功");
     }
 }

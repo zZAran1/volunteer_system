@@ -15,5 +15,7 @@ public class ActivityStatusTask {
     public void refreshActivityStatus() {
         activityMapper.refreshEnded();
         activityMapper.refreshOngoing();
+        activityMapper.refreshFull();
+        activityMapper.refreshUnFull();
     }
 }

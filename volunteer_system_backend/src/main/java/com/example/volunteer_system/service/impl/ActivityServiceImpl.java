@@ -2,9 +2,13 @@ package com.example.volunteer_system.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.volunteer_system.converter.Converter;
+import com.example.volunteer_system.exception.ActivityException;
+import com.example.volunteer_system.exception.RegistrationException;
+import com.example.volunteer_system.exception.ReviewEventException;
 import com.example.volunteer_system.exception.TokenException;
 import com.example.volunteer_system.mapper.ActivityMapper;
 import com.example.volunteer_system.model.dto.CreateActivityDTO;
+import com.example.volunteer_system.model.dto.SelectActivityDTO;
 import com.example.volunteer_system.model.dto.UpdateActivityDTO;
 import com.example.volunteer_system.model.entity.Activity;
 import com.example.volunteer_system.model.vo.ActivityVO;
@@ -29,6 +33,15 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
         this.baseMapper.refreshFull();
         this.baseMapper.refreshUnFull();
     }
+    private void checkActivityStatus(int activityId){
+        Activity db_activity = this.lambdaQuery()
+                .eq(Activity::getId,activityId)
+                .select(Activity::getStatus)
+                .one();
+        if(db_activity.getStatus()!=0){
+            throw new ReviewEventException("审核失败");
+        }
+    }
     @Override
     public void createActivity(CreateActivityDTO dto) {
         int userId = UserContext.getUserId();
@@ -43,12 +56,31 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     public void updateActivity(UpdateActivityDTO dto) {
         int userId = UserContext.getUserId();
         Activity activity = Converter.INSTANCE.toActivity(dto);
-        Integer id = activity.getId();
+        Activity db_activity=this.lambdaQuery()
+                .eq(Activity::getId ,activity.getId())
+                .select(Activity::getStatus,Activity::getHeadcount,Activity::getStart_date)
+                .one();
+        switch (db_activity.getStatus()){
+            case 2:
+                throw new ActivityException("无法修改进行中的活动");
+            case 4:
+                throw new ActivityException("无法修改已结束的活动");
+            case 5:
+                throw new ActivityException("无法修改审核未通过的活动");
+        }
+        if(db_activity.getHeadcount()>activity.getHeadcount_limit()){
+            throw new ActivityException("现已报名的人数比修改后的人数上限多，请重新编辑修改信息");
+        }
         this.lambdaUpdate()
-                .eq(Activity::getId, id)
+                .eq(Activity::getId, activity.getId())
                 .eq(Activity::getPoster_id, userId)   // 只能修改自己发布的活动
                 .set(Activity::getStatus,0)
                 .update(activity);
+    }
+    @Override
+    public List<ActivityVO> selectActivity(SelectActivityDTO dto){
+        updateTime();
+        return this.baseMapper.titleSelectActivity(dto.getTitle());
     }
     @Override
     public List<ActivityVO> getAllActivities() {
@@ -121,6 +153,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     @Override
     public void reviewEvent_Approved(int activityId){
         checkRole();
+        checkActivityStatus(activityId);
         this.lambdaUpdate()
                 .eq(Activity::getId,activityId)
                 .set(Activity::getStatus,1)
@@ -129,6 +162,7 @@ public class ActivityServiceImpl extends ServiceImpl<ActivityMapper, Activity> i
     @Override
     public void reviewEvent_Rejected(int activityId){
         checkRole();
+        checkActivityStatus(activityId);
         this.lambdaUpdate()
                 .eq(Activity::getId,activityId)
                 .set(Activity::getStatus,5)
